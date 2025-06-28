@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,9 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-yq7!yg+-&c#v8(j$7dcj%a89sxukchlm)m*b-e2c@gzndx#w%m')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(',')
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
 # Application definition
@@ -54,6 +58,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -90,43 +95,22 @@ WSGI_APPLICATION = 'desert_safari.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Use SQLite locally, PostgreSQL in production
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
-
-# PostgreSQL configuration - for later use
-# if DEBUG:
-#     # Development database configuration
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.postgresql',
-#             'NAME': 'safarideserttours',
-#             'USER': 'safari',
-#             'PASSWORD': 'dubai@123',  # Replace with your actual PostgreSQL password
-#             'HOST': 'localhost',
-#             'PORT': '5432',
-#         }
-#     }
-# else:
-#     # Production database configuration with connection pooling
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'dj_db_conn_pool.backends.postgresql',
-#             'NAME': 'safarideserttours',
-#             'USER': 'postgres',
-#             'PASSWORD': 'your_actual_password_here',  # Replace with your actual PostgreSQL password
-#             'HOST': 'localhost',
-#             'PORT': '5432',
-#             'POOL_OPTIONS': {
-#                 'POOL_SIZE': 20,
-#                 'MAX_OVERFLOW': 10,
-#                 'RECYCLE': 300,  # 5 minutes
-#             }
-#         }
-#     }
+else:
+    # Use Render PostgreSQL database
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600
+        )
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -167,12 +151,19 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
+# Enable WhiteNoise compression and caching
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Media files (User uploaded files)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # CORS settings
-CORS_ALLOW_ALL_ORIGINS = True  # Only for development
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only for development
+if not DEBUG:
+    CORS_ALLOWED_ORIGINS = [
+        "https://safarideserttours.onrender.com",
+    ]
 
 # CSRF settings
 CSRF_TRUSTED_ORIGINS = [
@@ -180,13 +171,15 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:58143',  # New browser preview domain
     'http://127.0.0.1:8000',
     'http://localhost:8000',
+    'https://safarideserttours.onrender.com',
 ]
 
 # For development only - disable CSRF protection
-CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_HTTPONLY = False
-CSRF_USE_SESSIONS = False
-CSRF_COOKIE_SAMESITE = None
+if DEBUG:
+    CSRF_COOKIE_SECURE = False
+    CSRF_COOKIE_HTTPONLY = False
+    CSRF_USE_SESSIONS = False
+    CSRF_COOKIE_SAMESITE = None
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -208,9 +201,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'thesafarideserttours@gmail.com'
-EMAIL_HOST_PASSWORD = 'wanfijdflsnmaurv'  # App password without spaces
-DEFAULT_FROM_EMAIL = 'thesafarideserttours@gmail.com'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'thesafarideserttours@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'wanfijdflsnmaurv')  # App password without spaces
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'thesafarideserttours@gmail.com')
 
 # OPTION 2: SendGrid (recommended for production)
 # 1. Sign up for SendGrid and get an API key

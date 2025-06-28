@@ -1,0 +1,1 @@
+web: gunicorn desert_safari.wsgi:application --log-file - 
