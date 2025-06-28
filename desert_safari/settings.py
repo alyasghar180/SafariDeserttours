@@ -22,15 +22,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-yq7!yg+-&c#v8(j$7dcj%a89sxukchlm)m*b-e2c@gzndx#w%m')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-yq7!yg+-&c#v8(j$7dcj%a89sxukchlm)m*b-e2c@gzndx#w%m')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(',')
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+ALLOWED_HOSTS = ['*']
+RAILWAY_STATIC_URL = os.environ.get('RAILWAY_STATIC_URL')
+if RAILWAY_STATIC_URL:
+    ALLOWED_HOSTS.append(RAILWAY_STATIC_URL)
 
 
 # Application definition
@@ -104,7 +104,7 @@ if DEBUG:
         }
     }
 else:
-    # Use Render PostgreSQL database
+    # Use Railway PostgreSQL database
     DATABASES = {
         'default': dj_database_url.config(
             default=os.environ.get('DATABASE_URL'),
@@ -162,7 +162,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only for development
 if not DEBUG:
     CORS_ALLOWED_ORIGINS = [
-        "https://safarideserttours.onrender.com",
+        "https://safari-desert-tours.up.railway.app",
     ]
 
 # CSRF settings
@@ -171,7 +171,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:58143',  # New browser preview domain
     'http://127.0.0.1:8000',
     'http://localhost:8000',
-    'https://safarideserttours.onrender.com',
+    'https://safari-desert-tours.up.railway.app',
 ]
 
 # For development only - disable CSRF protection
