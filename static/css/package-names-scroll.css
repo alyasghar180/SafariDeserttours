@@ -1,0 +1,79 @@
+/* Package Names Infinite Scroll Animation */
+.package-names-scroll-section {
+    width: 100%;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 20px 0;
+    margin: 0 0 30px 0;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.package-names-scroll-container {
+    display: flex;
+    white-space: nowrap;
+    animation: scrollPackageNames 30s linear infinite;
+    padding: 10px 0;
+}
+
+.package-names-scroll-container:hover {
+    animation-play-state: paused;
+}
+
+@keyframes scrollPackageNames {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.package-name-item {
+    display: inline-block;
+    margin: 0 30px;
+    padding: 10px 25px;
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    color: white;
+    font-weight: 600;
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.package-name-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    background: linear-gradient(135deg, #e91e63 0%, #d31556 100%);
+    color: white;
+}
+
+.package-name-item.featured {
+    background: linear-gradient(135deg, #e91e63 0%, #d31556 100%);
+}
+
+.package-name-item.premium {
+    background: linear-gradient(135deg, #f6c23e 0%, #e0a800 100%);
+}
+
+.package-name-item.self-drive {
+    background: linear-gradient(135deg, #1cc88a 0%, #169a6b 100%);
+}
+
+.package-name-item.bus {
+    background: linear-gradient(135deg, #36b9cc 0%, #258391 100%);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .package-names-scroll-container {
+        animation-duration: 20s;
+    }
+    
+    .package-name-item {
+        margin: 0 15px;
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+}

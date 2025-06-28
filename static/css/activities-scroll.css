@@ -1,0 +1,126 @@
+/* Infinite Scroll Animation for Activities */
+.activities-scroll-section {
+    position: relative;
+    padding: 60px 0;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(250,250,255,0.9), rgba(255,255,255,0.8));
+    margin-bottom: 0;
+}
+
+.activities-scroll-section::before,
+.activities-scroll-section::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 100px;
+    height: 100%;
+    z-index: 2;
+}
+
+.activities-scroll-section::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0));
+}
+
+.activities-scroll-section::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(255,255,255,1), rgba(255,255,255,0));
+}
+
+.activities-scroll-container {
+    display: flex;
+    gap: 30px;
+    width: max-content;
+    animation: activities-scroll 30s linear infinite;
+    padding: 20px 0;
+}
+
+.activities-scroll-container:hover {
+    animation-play-state: paused;
+}
+
+.activity-scroll-item {
+    width: 180px;
+    height: 180px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    background: #fff;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.activity-scroll-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+.activity-scroll-item.selected {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    border: 2px solid #e91e63;
+}
+
+.activity-scroll-item.selected .activity-scroll-icon {
+    color: #e91e63;
+    transform: scale(1.2);
+}
+
+.activity-scroll-icon {
+    font-size: 3rem;
+    color: #4e73df;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.activity-scroll-item:hover .activity-scroll-icon {
+    transform: scale(1.2);
+    color: #e91e63;
+}
+
+.activity-scroll-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: #333;
+}
+
+@keyframes activities-scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(calc(-210px * 8)); /* Adjust based on number of items and gap */
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .activities-scroll-section {
+        padding: 40px 0;
+    }
+    
+    .activities-scroll-section::before,
+    .activities-scroll-section::after {
+        width: 50px;
+    }
+    
+    .activity-scroll-item {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .activity-scroll-icon {
+        font-size: 2.5rem;
+    }
+    
+    .activity-scroll-title {
+        font-size: 14px;
+    }
+}

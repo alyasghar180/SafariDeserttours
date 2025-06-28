@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Cancellation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #dc3545;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        .booking-details {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Booking Cancellation</h1>
+    </div>
+    
+    <div class="content">
+        <p>Dear {{ booking.full_name }},</p>
+        
+        <p>Your booking with {{ company_name }} has been <span class="highlight">cancelled</span> as requested.</p>
+        
+        <div class="booking-details">
+            <h2>Cancelled Booking Details</h2>
+            <p><strong>Booking Reference:</strong> {{ booking.booking_id }}</p>
+            <p><strong>Package:</strong> {{ booking.package.name }}</p>
+            <p><strong>Date:</strong> {{ booking.booking_date|date:"F j, Y" }}</p>
+            <p><strong>Group Size:</strong> {{ booking.adults }} Adults{% if booking.children > 0 %}, {{ booking.children }} Children{% endif %}</p>
+            <p><strong>Cancellation Date:</strong> {{ cancellation_date }}</p>
+            
+            {% if booking.cancellation_reason %}
+            <p><strong>Cancellation Reason:</strong> {{ booking.cancellation_reason }}</p>
+            {% endif %}
+        </div>
+        
+        <h3>Refund Information</h3>
+        <p>If you have already made a payment for this booking:</p>
+        <ul>
+            <li>Cancellations made more than 24 hours before the scheduled date are eligible for a full refund.</li>
+            <li>Cancellations made within 24 hours of the scheduled date may be subject to a cancellation fee.</li>
+            <li>Our team will process your refund according to our refund policy.</li>
+        </ul>
+        
+        <p>If you have any questions about your cancellation or refund, please don't hesitate to contact us:</p>
+        <p>Email: {{ company_email }}<br>Phone: {{ company_phone }}</p>
+        
+        <p>We hope to welcome you on another desert safari experience in the future!</p>
+        
+        <p>Best regards,<br>The {{ company_name }} Team</p>
+    </div>
+    
+    <div class="footer">
+        <p>&copy; {{ company_name }}. All rights reserved.</p>
+        <p>This email was sent to {{ booking.email }}</p>
+    </div>
+</body>
+</html>

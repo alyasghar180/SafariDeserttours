@@ -1,0 +1,239 @@
+/* CSS for Static Pages (About, Contact, Gallery) */
+
+/* Hero Sections */
+.about-hero,
+.contact-hero,
+.gallery-hero {
+    background-size: cover;
+    background-position: center;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    color: white;
+}
+
+.about-hero::before,
+.contact-hero::before,
+.gallery-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.about-hero .hero-content,
+.contact-hero .hero-content,
+.gallery-hero .hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* About Page Styles */
+.about-image img {
+    width: 100%;
+    height: auto;
+}
+
+.team-image img {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border: 5px solid #f8f9fa;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.value-card {
+    transition: transform 0.3s;
+}
+
+.value-card:hover {
+    transform: translateY(-10px);
+}
+
+.team-card {
+    padding: 20px;
+    transition: transform 0.3s;
+}
+
+.team-card:hover {
+    transform: translateY(-10px);
+}
+
+/* Contact Page Styles */
+.contact-card {
+    transition: transform 0.3s;
+}
+
+.contact-card:hover {
+    transform: translateY(-10px);
+}
+
+.map-container {
+    overflow: hidden;
+    height: 100%;
+    min-height: 450px;
+}
+
+/* Gallery Page Styles */
+.gallery-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    margin-bottom: 30px;
+    height: 250px;
+}
+
+.gallery-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+}
+
+.gallery-card:hover img {
+    transform: scale(1.1);
+}
+
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.gallery-card:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-info {
+    text-align: center;
+    color: white;
+    padding: 20px;
+}
+
+.gallery-info h5 {
+    margin-bottom: 10px;
+}
+
+.gallery-popup {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    transition: all 0.3s;
+}
+
+.gallery-popup:hover {
+    background-color: white;
+    color: var(--primary-color);
+}
+
+.video-thumbnail {
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.video-thumbnail img {
+    transition: transform 0.5s;
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.video-card:hover .video-thumbnail img {
+    transform: scale(1.05);
+}
+
+.video-play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    font-size: 20px;
+    transition: all 0.3s;
+}
+
+.video-play-btn:hover {
+    background-color: white;
+    color: var(--primary-color);
+}
+
+/* Filter Buttons for Gallery */
+.filter-buttons .btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Common CTA Section */
+.cta-section {
+    background-size: cover;
+    background-position: center;
+    padding: 80px 0;
+    position: relative;
+    color: white;
+    margin-top: 50px;
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.cta-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* Social Icons */
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 20px;
+    transition: all 0.3s;
+}
+
+.social-icon:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: translateY(-5px);
+}

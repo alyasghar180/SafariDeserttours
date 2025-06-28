@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+{% load static %}
+{% load i18n %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard - Desert Safari Dubai{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- AOS Animation Library -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modern-style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/enhanced-style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    
+    {% block dashboard_css %}{% endblock %}
+</head>
+<body>
+
+<div class="dashboard-wrapper" id="dashboardWrapper">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar" id="dashboardSidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'home' %}" class="sidebar-brand">
+                <i class="fas fa-sun"></i> <span>Desert Safari</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="sidebar-heading">{% trans "Main" %}</div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'dashboard_home' %}active{% endif %}" href="{% url 'dashboard_home' %}">
+                        <i class="fas fa-tachometer-alt"></i> <span>{% trans "Dashboard" %}</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-heading">{% trans "Management" %}</div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'dashboard_booking_list' %}active{% endif %}" href="{% url 'dashboard_booking_list' %}">
+                        <i class="fas fa-calendar-check"></i> <span>{% trans "Bookings" %}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'dashboard_package_list' %}active{% endif %}" href="{% url 'dashboard_package_list' %}">
+                        <i class="fas fa-box"></i> <span>{% trans "Packages" %}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'dashboard_user_list' %}active{% endif %}" href="{% url 'dashboard_user_list' %}">
+                        <i class="fas fa-users"></i> <span>{% trans "Users" %}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'dashboard_review_list' %}active{% endif %}" href="{% url 'dashboard_review_list' %}">
+                        <i class="fas fa-star"></i> <span>{% trans "Reviews" %}</span>
+                        {% if pending_reviews_count > 0 %}
+                        <span class="badge bg-danger ms-2">{{ pending_reviews_count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-heading">{% trans "System" %}</div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'admin:index' %}">
+                        <i class="fas fa-cogs"></i> <span>{% trans "Admin Panel" %}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">
+                        <i class="fas fa-home"></i> <span>{% trans "Back to Site" %}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard_logout' %}">
+                        <i class="fas fa-sign-out-alt"></i> <span>{% trans "Logout" %}</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <div class="dashboard-header">
+            <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary d-md-none me-3">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <h1 class="dashboard-title">{% block dashboard_title %}{% trans "Dashboard" %}{% endblock %}</h1>
+            
+            <div class="dashboard-actions">
+                {% block dashboard_actions %}{% endblock %}
+            </div>
+        </div>
+        
+        {% if messages %}
+        <div class="messages mb-4">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% block dashboard_content %}{% endblock %}
+    </main>
+</div>
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- AOS Animation Library -->
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<!-- Chart.js for Dashboard -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Custom JS -->
+<script src="{% static 'js/main.js' %}"></script>
+<script src="{% static 'js/modern-main.js' %}"></script>
+<script src="{% static 'js/enhanced-main.js' %}"></script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+
+{% block dashboard_js %}{% endblock %}
+</body>
+</html>

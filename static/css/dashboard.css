@@ -1,0 +1,402 @@
+/* Dashboard Styles for Desert Safari Dubai */
+
+/* Dashboard Layout */
+.dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+/* Sidebar Styles */
+.dashboard-sidebar {
+    width: 250px;
+    background: linear-gradient(135deg, #2c3e50, #1a252f);
+    color: #fff;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-brand {
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.sidebar-brand i {
+    margin-right: 0.5rem;
+    color: #e67e22;
+}
+
+.sidebar-heading {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 1.25rem 1.5rem 0.5rem;
+    margin-bottom: 0;
+}
+
+.sidebar-menu {
+    padding-bottom: 2rem;
+}
+
+.sidebar-menu .nav-link {
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-menu .nav-link i {
+    margin-right: 0.75rem;
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-menu .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-left-color: #e67e22;
+}
+
+.sidebar-menu .nav-link.active {
+    color: #fff;
+    background-color: rgba(230, 126, 34, 0.15);
+    border-left-color: #e67e22;
+}
+
+/* Main Content Area */
+.dashboard-main {
+    flex: 1;
+    margin-left: 250px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    position: relative;
+}
+
+.dashboard-actions {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#sidebarToggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+}
+
+.dashboard-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    color: #2c3e50;
+}
+
+/* Sidebar Collapsed State */
+.sidebar-collapsed .dashboard-sidebar {
+    width: 70px;
+    overflow: visible;
+}
+
+.sidebar-collapsed .sidebar-brand span,
+.sidebar-collapsed .sidebar-menu span,
+.sidebar-collapsed .sidebar-heading {
+    display: none;
+}
+
+.sidebar-collapsed .sidebar-menu .nav-link {
+    padding: 0.75rem;
+    justify-content: center;
+}
+
+.sidebar-collapsed .sidebar-menu .nav-link i {
+    margin-right: 0;
+    font-size: 1.25rem;
+}
+
+.sidebar-collapsed .dashboard-main {
+    margin-left: 70px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .dashboard-sidebar {
+        width: 250px;
+        left: -250px;
+    }
+    
+    .dashboard-main {
+        margin-left: 0;
+    }
+    
+    .sidebar-collapsed .dashboard-sidebar {
+        left: 0;
+        width: 250px;
+    }
+    
+    .sidebar-collapsed .dashboard-main {
+        margin-left: 0;
+    }
+    
+    .sidebar-collapsed .sidebar-brand span,
+    .sidebar-collapsed .sidebar-menu span,
+    .sidebar-collapsed .sidebar-heading {
+        display: inline;
+    }
+    
+    .sidebar-collapsed .sidebar-menu .nav-link {
+        padding: 0.75rem 1.5rem;
+        justify-content: flex-start;
+    }
+    
+    .sidebar-collapsed .sidebar-menu .nav-link i {
+        margin-right: 0.75rem;
+        font-size: 1rem;
+    }
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+/* Icon Circles */
+.icon-circle {
+    height: 3rem;
+    width: 3rem;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+/* Border Left Colors */
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e;
+}
+
+.border-left-danger {
+    border-left: 0.25rem solid #e74a3b;
+}
+
+.dashboard-card:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+.dashboard-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.dashboard-card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    color: #2c3e50;
+}
+
+/* Booking Detail Page Styles */
+.booking-status-badge {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+}
+
+/* Contact Buttons */
+.contact-btn-group .btn {
+    padding: 0.375rem 0.75rem;
+    border-radius: 4px;
+}
+
+.contact-btn-group .btn i {
+    margin-right: 0.25rem;
+}
+
+/* Status Colors */
+.status-pending {
+    color: #f39c12;
+}
+
+.status-confirmed, .status-paid, .status-completed {
+    color: #27ae60;
+}
+
+.status-cancelled, .status-refunded {
+    color: #c0392b;
+}
+
+/* Table Improvements */
+.table-dashboard, .booking-table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-dashboard th, .booking-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.table-dashboard td, .table-dashboard th,
+.booking-table td, .booking-table th {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+}
+
+.table-dashboard tbody tr, .booking-table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table-dashboard tbody tr:hover, .booking-table tbody tr:hover {
+    background-color: rgba(230, 126, 34, 0.1);
+}
+
+/* Clickable Booking Rows */
+.booking-row {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.booking-row:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Booking Table Specific Styles */
+.booking-table {
+    margin-bottom: 0;
+}
+
+.booking-table th {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.booking-table td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+.booking-table .btn-group {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.booking-table .btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    margin: 0;
+    border-radius: 0;
+}
+
+.booking-table .btn:first-child {
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+}
+
+.booking-table .btn:last-child {
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+}
+
+.booking-table .badge {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Action Buttons */
+.action-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 4px;
+}
+
+.action-btn i {
+    margin-right: 0;
+}
+
+/* Ensure all content is visible */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure modals appear on top */
+.modal {
+    z-index: 1050;
+}
+
+/* Overlay for mobile sidebar */
+@media (max-width: 992px) {
+    .sidebar-collapsed::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+}

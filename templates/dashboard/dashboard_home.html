@@ -1,0 +1,530 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load i18n %}
+{% load dashboard_tags %}
+
+{% block title %}{% trans "Dashboard" %} | Desert Safari Dubai{% endblock %}
+
+{% block dashboard_title %}{% trans "Dashboard Overview" %}{% endblock %}
+
+{% block dashboard_actions %}
+<div class="dropdown">
+    <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="timeRangeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-calendar me-1"></i> {% trans "This Month" %}
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="timeRangeDropdown">
+        <li><a class="dropdown-item active" href="#">{% trans "This Month" %}</a></li>
+        <li><a class="dropdown-item" href="#">{% trans "Last Month" %}</a></li>
+        <li><a class="dropdown-item" href="#">{% trans "Last 3 Months" %}</a></li>
+        <li><a class="dropdown-item" href="#">{% trans "This Year" %}</a></li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="row mb-4" data-aos="fade-up" data-aos-delay="100">
+    <div class="col-12">
+        <div class="alert alert-info d-flex align-items-center" role="alert">
+            <i class="fas fa-info-circle me-3 fa-lg"></i>
+            <div>
+                {% trans "Welcome to your dashboard! Here you can manage all aspects of your Desert Safari business." %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if pending_reviews_count > 0 %}
+<!-- Pending Reviews Alert -->
+<div class="row mb-4" data-aos="fade-up" data-aos-delay="150">
+    <div class="col-12">
+        <div class="alert alert-warning d-flex align-items-center" role="alert">
+            <i class="fas fa-exclamation-triangle me-3 fa-lg"></i>
+            <div>
+                {% trans "You have" %} <strong>{{ pending_reviews_count }}</strong> {% trans "pending reviews that need your approval." %}
+                <a href="{% url 'dashboard_review_list' %}?is_approved=false" class="alert-link ms-2">{% trans "Review now" %} <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <!-- Bookings Card -->
+    <div class="col-md-6 col-lg-3 mb-3" data-aos="fade-up" data-aos-delay="100">
+        <div class="stats-card">
+            <div class="stats-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stats-info">
+                <h5>{% trans "Total Bookings" %}</h5>
+                <h3 class="counter" data-target="{{ total_bookings }}">0</h3>
+                <p class="{% if booking_growth >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    <i class="fas {% if booking_growth >= 0 %}fa-arrow-up{% else %}fa-arrow-down{% endif %}"></i>
+                    {{ booking_growth|floatformat:1 }}% {% trans "from last month" %}
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Revenue Card -->
+    <div class="col-md-6 col-lg-3 mb-3" data-aos="fade-up" data-aos-delay="200">
+        <div class="stats-card">
+            <div class="stats-icon" style="background: var(--gradient-success)">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="stats-info">
+                <h5>{% trans "Total Revenue" %}</h5>
+                <h3>AED <span class="counter" data-target="{{ total_revenue|floatformat:0 }}">0</span></h3>
+                <p class="{% if revenue_growth >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    <i class="fas {% if revenue_growth >= 0 %}fa-arrow-up{% else %}fa-arrow-down{% endif %}"></i>
+                    {{ revenue_growth|floatformat:1 }}% {% trans "from last month" %}
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Packages Card -->
+    <div class="col-md-6 col-lg-3 mb-3" data-aos="fade-up" data-aos-delay="300">
+        <div class="stats-card">
+            <div class="stats-icon" style="background: var(--gradient-info)">
+                <i class="fas fa-box"></i>
+            </div>
+            <div class="stats-info">
+                <h5>{% trans "Total Packages" %}</h5>
+                <h3 class="counter" data-target="{{ total_packages }}">0</h3>
+                <p>
+                    <span class="badge bg-success">{{ active_packages }} {% trans "active" %}</span>
+                    <span class="badge bg-primary">{{ featured_packages }} {% trans "featured" %}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Users Card -->
+    <div class="col-md-6 col-lg-3 mb-3" data-aos="fade-up" data-aos-delay="400">
+        <div class="stats-card">
+            <div class="stats-icon" style="background: var(--gradient-warning)">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stats-info">
+                <h5>{% trans "Total Users" %}</h5>
+                <h3 class="counter" data-target="{{ total_users }}">0</h3>
+                <p>
+                    <span class="badge bg-info">{{ new_users_this_month }} {% trans "new this month" %}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Charts Section -->
+    <div class="col-lg-8 mb-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="data-card">
+            <div class="data-card-header">
+                <h5 class="data-card-title">{% trans "Booking Trends" %}</h5>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-secondary active">{% trans "Monthly" %}</button>
+                    <button type="button" class="btn btn-outline-secondary">{% trans "Weekly" %}</button>
+                </div>
+            </div>
+            <div class="data-card-body">
+                <div style="height: 300px;">
+                    <canvas id="bookingTrendsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Booking Status Chart -->
+    <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="data-card h-100">
+            <div class="data-card-header">
+                <h5 class="data-card-title">{% trans "Booking Status" %}</h5>
+            </div>
+            <div class="data-card-body text-center">
+                <div style="height: 220px;">
+                    <canvas id="bookingStatusChart"></canvas>
+                </div>
+                <div class="mt-3">
+                    {% for status, display_name in booking.STATUS_CHOICES %}
+                    <span class="badge {% if status == 'pending' %}bg-warning{% elif status == 'confirmed' %}bg-info{% elif status == 'paid' %}bg-primary{% elif status == 'completed' %}bg-success{% elif status == 'cancelled' %}bg-danger{% elif status == 'refunded' %}bg-secondary{% endif %} me-1">
+                        {{ display_name }}: {{ status_counts|get_item:status|default:0 }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Revenue Chart -->
+    <div class="col-lg-8 mb-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="data-card">
+            <div class="data-card-header">
+                <h5 class="data-card-title">{% trans "Revenue Analysis" %}</h5>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-secondary active">{% trans "Monthly" %}</button>
+                    <button type="button" class="btn btn-outline-secondary">{% trans "Quarterly" %}</button>
+                </div>
+            </div>
+            <div class="data-card-body">
+                <div style="height: 300px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reviews Summary -->
+    <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="400">
+        <div class="data-card h-100">
+            <div class="data-card-header">
+                <h5 class="data-card-title">{% trans "Reviews Summary" %}</h5>
+                <span class="badge bg-success">{{ average_rating|floatformat:1 }} / 5</span>
+            </div>
+            <div class="data-card-body">
+                <div class="text-center mb-3">
+                    <div class="display-4 mb-1">{{ average_rating|floatformat:1 }}</div>
+                    <div class="text-warning fs-4">
+                        {% for i in "12345"|make_list %}
+                        <i class="fas {% if forloop.counter <= average_rating %}fa-star{% elif forloop.counter <= average_rating|add:0.5 %}fa-star-half-alt{% else %}fa-star text-muted opacity-50{% endif %}"></i>
+                        {% endfor %}
+                    </div>
+                    <div class="text-muted mt-2">{% trans "Based on" %} {{ total_reviews }} {% trans "reviews" %}</div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div style="height: 100px; width: 100px;">
+                            <canvas id="packagePopularityChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        {% if pending_reviews > 0 %}
+                        <a href="{% url 'dashboard_review_list' %}?is_approved=false" class="btn btn-warning">
+                            <i class="fas fa-exclamation-circle me-1"></i> {{ pending_reviews }} {% trans "pending" %}
+                        </a>
+                        {% else %}
+                        <span class="badge bg-success p-2"><i class="fas fa-check me-1"></i> {% trans "All reviews approved" %}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Bookings -->
+<div class="data-card mb-4" data-aos="fade-up" data-aos-delay="500">
+    <div class="data-card-header">
+        <h5 class="data-card-title">{% trans "Recent Bookings" %}</h5>
+        <a href="{% url 'dashboard_booking_list' %}" class="btn btn-sm btn-primary">
+            <i class="fas fa-list me-1"></i> {% trans "View All" %}
+        </a>
+    </div>
+    <div class="data-card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-dashboard table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>{% trans "ID" %}</th>
+                        <th>{% trans "Customer" %}</th>
+                        <th>{% trans "Package" %}</th>
+                        <th>{% trans "Date" %}</th>
+                        <th>{% trans "Total" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th>{% trans "Actions" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in recent_bookings %}
+                    <tr>
+                        <td><strong>{{ booking.booking_id }}</strong></td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar bg-light me-2 d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-user text-primary"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">{{ booking.full_name }}</div>
+                                    <div class="small text-muted">{{ booking.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ booking.package.name }}</td>
+                        <td>{{ booking.booking_date }}</td>
+                        <td><strong>AED {{ booking.total_price }}</strong></td>
+                        <td>
+                            <span class="badge {% if booking.status == 'pending' %}bg-warning{% elif booking.status == 'confirmed' %}bg-info{% elif booking.status == 'paid' %}bg-primary{% elif booking.status == 'completed' %}bg-success{% elif booking.status == 'cancelled' %}bg-danger{% elif booking.status == 'refunded' %}bg-secondary{% endif %}">
+                                {{ booking.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <a href="{% url 'admin:bookings_booking_change' booking.id %}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="{% trans 'Edit Booking' %}">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" title="{% trans 'View Details' %}">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <i class="fas fa-calendar-times text-muted fa-2x mb-3"></i>
+                            <p>{% trans "No bookings found" %}</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="data-card-footer text-center">
+        <small class="text-muted">{% trans "Showing recent" %} {{ recent_bookings|length }} {% trans "of" %} {{ total_bookings }} {% trans "bookings" %}</small>
+    </div>
+</div>
+
+{% block dashboard_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize AOS animations
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+        
+        // Booking Status Chart
+        const bookingStatusChart = document.getElementById('bookingStatusChart');
+        if (bookingStatusChart) {
+            new Chart(bookingStatusChart, {
+                type: 'doughnut',
+                data: {
+                    labels: [
+                        {% for status, display_name in booking.STATUS_CHOICES %}
+                        '{{ display_name }}',
+                        {% endfor %}
+                    ],
+                    datasets: [{
+                        data: [
+                            {% for status, display_name in booking.STATUS_CHOICES %}
+                            {{ status_counts|get_item:status|default:0 }},
+                            {% endfor %}
+                        ],
+                        backgroundColor: [
+                            '#f39c12', // pending - warning
+                            '#3498db', // confirmed - info
+                            '#2980b9', // paid - primary
+                            '#27ae60', // completed - success
+                            '#e74c3c', // cancelled - danger
+                            '#95a5a6'  // refunded - secondary
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#2c3e50',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.formattedValue;
+                                    const dataset = context.dataset;
+                                    const total = dataset.data.reduce((acc, data) => acc + data, 0);
+                                    const percentage = Math.round((context.raw / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+        
+        // Booking Trends Chart
+        const bookingTrendsChart = document.getElementById('bookingTrendsChart');
+        if (bookingTrendsChart) {
+            new Chart(bookingTrendsChart, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Bookings',
+                        data: [65, 59, 80, 81, 56, 55, 40, 60, 75, 85, 90, 100],
+                        fill: true,
+                        backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                        borderColor: '#e67e22',
+                        tension: 0.4,
+                        pointBackgroundColor: '#e67e22',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: '#2c3e50',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#e67e22',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                borderDash: [2, 4],
+                                color: '#e9ecef'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Revenue Chart
+        const revenueChart = document.getElementById('revenueChart');
+        if (revenueChart) {
+            new Chart(revenueChart, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: [12500, 19000, 15000, 17000, 22000, 24000, 19000, 21000, 25000, 23000, 26000, 30000],
+                        backgroundColor: '#e67e22',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: '#2c3e50',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += 'AED ' + context.parsed.y.toLocaleString();
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                borderDash: [2, 4],
+                                color: '#e9ecef'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return 'AED ' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Package Popularity Chart
+        const packagePopularityChart = document.getElementById('packagePopularityChart');
+        if (packagePopularityChart) {
+            new Chart(packagePopularityChart, {
+                type: 'polarArea',
+                data: {
+                    labels: ['Evening Safari', 'Morning Safari', 'Overnight Safari', 'Dune Buggy', 'Camel Trekking'],
+                    datasets: [{
+                        data: [35, 20, 15, 18, 12],
+                        backgroundColor: ['#e67e22', '#3498db', '#27ae60', '#9b59b6', '#f39c12'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#2c3e50',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        r: {
+                            ticks: {
+                                display: false
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

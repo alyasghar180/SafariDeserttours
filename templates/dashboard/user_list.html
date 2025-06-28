@@ -1,0 +1,112 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Users" %} | Dashboard | Desert Safari Dubai{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{% trans "Users Management" %}</h1>
+    <div>
+        <a href="{% url 'admin:accounts_customuser_add' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> {% trans "Add New User" %}
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h5 class="card-title mb-0">{% trans "Filter Users" %}</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="is_staff" class="form-label">{% trans "User Type" %}</label>
+                <select name="is_staff" id="is_staff" class="form-select">
+                    <option value="">{% trans "All Users" %}</option>
+                    <option value="true" {% if is_staff == 'true' %}selected{% endif %}>{% trans "Staff" %}</option>
+                    <option value="false" {% if is_staff == 'false' %}selected{% endif %}>{% trans "Customers" %}</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="is_active" class="form-label">{% trans "Status" %}</label>
+                <select name="is_active" id="is_active" class="form-select">
+                    <option value="">{% trans "All Statuses" %}</option>
+                    <option value="true" {% if is_active == 'true' %}selected{% endif %}>{% trans "Active" %}</option>
+                    <option value="false" {% if is_active == 'false' %}selected{% endif %}>{% trans "Inactive" %}</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="search" class="form-label">{% trans "Search" %}</label>
+                <input type="text" class="form-control" id="search" name="search" value="{{ search }}" placeholder="{% trans 'Username, email, name...' %}">
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-filter me-1"></i> {% trans "Apply Filters" %}
+                </button>
+                <a href="{% url 'dashboard_user_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-undo me-1"></i> {% trans "Reset" %}
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Users Table -->
+<div class="card shadow-sm">
+    <div class="card-header bg-light">
+        <h5 class="card-title mb-0">{% trans "Users" %}</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>{% trans "Username" %}</th>
+                        <th>{% trans "Name" %}</th>
+                        <th>{% trans "Email" %}</th>
+                        <th>{% trans "Phone" %}</th>
+                        <th>{% trans "Type" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th>{% trans "Joined" %}</th>
+                        <th>{% trans "Actions" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.get_full_name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.phone|default:"-" }}</td>
+                        <td>
+                            <span class="badge {% if user.is_staff %}bg-info{% else %}bg-secondary{% endif %}">
+                                {% if user.is_staff %}{% trans "Staff" %}{% else %}{% trans "Customer" %}{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge {% if user.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                {% if user.is_active %}{% trans "Active" %}{% else %}{% trans "Inactive" %}{% endif %}
+                            </span>
+                        </td>
+                        <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{% url 'admin:accounts_customuser_change' user.id %}" class="btn btn-sm btn-outline-primary" title="{% trans 'Edit' %}">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-3">{% trans "No users found matching your criteria" %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

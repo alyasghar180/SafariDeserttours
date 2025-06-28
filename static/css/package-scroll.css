@@ -1,0 +1,89 @@
+/* Package Names Infinite Scroll */
+.package-names-scroll-section {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+    padding: 20px 0;
+    margin-bottom: 30px;
+}
+
+.package-names-scroll-section::before,
+.package-names-scroll-section::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 150px;
+    height: 100%;
+    z-index: 2;
+}
+
+.package-names-scroll-section::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(26, 42, 108, 1), rgba(26, 42, 108, 0));
+}
+
+.package-names-scroll-section::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(26, 42, 108, 1), rgba(26, 42, 108, 0));
+}
+
+.package-names-scroll-container {
+    display: flex;
+    gap: 30px;
+    width: max-content;
+    animation: package-names-scroll 40s linear infinite;
+    padding: 10px 0;
+}
+
+.package-names-scroll-container:hover {
+    animation-play-state: paused;
+}
+
+.package-name-item {
+    display: inline-block;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    white-space: nowrap;
+}
+
+.package-name-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-5px);
+    color: #fff;
+    text-decoration: none;
+}
+
+.package-name-item.featured {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    box-shadow: 0 5px 15px rgba(255, 75, 43, 0.3);
+}
+
+.package-name-item.premium {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+}
+
+.package-name-item.self-drive {
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+}
+
+.package-name-item.bus {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+}
+
+@keyframes package-names-scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(calc(-100% / 2));
+    }
+}

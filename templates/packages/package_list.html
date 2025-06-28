@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% if active_category %}{{ active_category.name }} - {% endif %}{% trans "Desert Safari Packages" %} | Desert Safari Dubai{% endblock %}
+
+{% block content %}
+{% if user.is_staff %}
+<!-- Admin Quick Access Dashboard -->
+<section class="admin-dashboard-section">
+    <div class="container">
+        <div class="admin-dashboard-wrapper" data-aos="fade-down">
+            <div class="admin-dashboard-header">
+                <h2><i class="fas fa-tachometer-alt me-2"></i> Admin Quick Dashboard</h2>
+                <a href="{% url 'dashboard_home' %}" class="btn btn-sm btn-primary">Full Dashboard <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+            <div class="admin-dashboard-content">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="admin-quick-card">
+                            <div class="admin-quick-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="admin-quick-info">
+                                <h4>Bookings</h4>
+                                <a href="{% url 'dashboard_booking_list' %}" class="btn btn-sm btn-outline-primary">Manage</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="admin-quick-card">
+                            <div class="admin-quick-icon" style="background: var(--gradient-success)">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="admin-quick-info">
+                                <h4>Packages</h4>
+                                <a href="{% url 'dashboard_package_list' %}" class="btn btn-sm btn-outline-success">Manage</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="admin-quick-card">
+                            <div class="admin-quick-icon" style="background: var(--gradient-info)">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="admin-quick-info">
+                                <h4>Users</h4>
+                                <a href="{% url 'dashboard_user_list' %}" class="btn btn-sm btn-outline-info">Manage</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="admin-quick-card">
+                            <div class="admin-quick-icon" style="background: var(--gradient-warning)">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="admin-quick-info">
+                                <h4>Reviews</h4>
+                                <a href="{% url 'dashboard_review_list' %}" class="btn btn-sm btn-outline-warning">Manage</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<div class="container py-5">
+    <div class="row">
+        <!-- Category sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm" data-aos="fade-right">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-tags me-2"></i>{% trans "Categories" %}</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'package_list' %}" class="list-group-item list-group-item-action {% if not active_category %}active{% endif %}">
+                        {% trans "All Packages" %}
+                    </a>
+                    {% for category in categories %}
+                    <a href="{% url 'package_list_by_category' category.slug %}" class="list-group-item list-group-item-action {% if active_category.id == category.id %}active{% endif %}">
+                        {% if category.icon %}<i class="{{ category.icon }} me-2"></i>{% endif %}
+                        {{ category.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card shadow-sm mt-4" data-aos="fade-right" data-aos-delay="100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-filter me-2"></i>{% trans "Filter By" %}</h5>
+                </div>
+                <div class="card-body">
+                    <h6>{% trans "Transportation" %}</h6>
+                    <form method="get" action=".">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="transportation" id="transport_all" value="" {% if not current_transportation %}checked{% endif %}>
+                            <label class="form-check-label" for="transport_all">{% trans "All" %}</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="transportation" id="transport_self" value="self_drive" {% if current_transportation == 'self_drive' %}checked{% endif %}>
+                            <label class="form-check-label" for="transport_self">{% trans "Self Drive" %}</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="transportation" id="transport_bus" value="bus" {% if current_transportation == 'bus' %}checked{% endif %}>
+                            <label class="form-check-label" for="transport_bus">{% trans "Bus" %}</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="transportation" id="transport_4x4" value="4x4" {% if current_transportation == '4x4' %}checked{% endif %}>
+                            <label class="form-check-label" for="transport_4x4">{% trans "4x4 Vehicle" %}</label>
+                        </div>
+                        
+                        <h6 class="mt-3">{% trans "Sort By" %}</h6>
+                        <select class="form-select" name="sort">
+                            <option value="" {% if not current_sort %}selected{% endif %}>{% trans "Featured" %}</option>
+                            <option value="price_asc" {% if current_sort == 'price_asc' %}selected{% endif %}>{% trans "Price: Low to High" %}</option>
+                            <option value="price_desc" {% if current_sort == 'price_desc' %}selected{% endif %}>{% trans "Price: High to Low" %}</option>
+                            <option value="duration_asc" {% if current_sort == 'duration_asc' %}selected{% endif %}>{% trans "Duration: Short to Long" %}</option>
+                            <option value="duration_desc" {% if current_sort == 'duration_desc' %}selected{% endif %}>{% trans "Duration: Long to Short" %}</option>
+                        </select>
+                        
+                        <button type="submit" class="btn btn-primary mt-3 w-100">{% trans "Apply Filters" %}</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Package listings -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-up">
+                <div>
+                    <h2 class="mb-0">
+                        {% if active_category %}
+                            <i class="fas fa-compass me-2"></i>{{ active_category.name }}
+                        {% else %}
+                            <i class="fas fa-compass me-2"></i>{% trans "All Desert Safari Packages" %}
+                        {% endif %}
+                    </h2>
+                    <p class="text-muted mt-2">{% trans "Discover our selection of unforgettable desert experiences" %}</p>
+                </div>
+                <span class="badge rounded-pill" style="background: var(--gradient-primary); padding: 8px 15px;"><i class="fas fa-search me-1"></i>{{ packages.count }} {% trans "packages found" %}</span>
+            </div>
+            
+            {% if active_category and active_category.description %}
+            <div class="alert alert-light mb-4">
+                {{ active_category.description }}
+            </div>
+            {% endif %}
+            
+            {% if not packages %}
+            <div class="alert alert-info">
+                {% trans "No packages found matching your criteria. Please try different filters." %}
+            </div>
+            {% endif %}
+            
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for package in packages %}
+                <div class="col">
+                    <div class="card h-100 package-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:"50"|stringformat:"d" }}">
+                        {% if package.is_featured %}
+                        <div class="featured-badge">{% trans "Featured" %}</div>
+                        {% endif %}
+                        
+                        {% if package.featured_image %}
+                        <img src="{{ package.featured_image.url }}" class="card-img-top" alt="{{ package.name }}">
+                        {% else %}
+                        <img src="{% static 'images/gallery/Evening Desert Safari.jpg' %}" class="card-img-top" alt="{{ package.name }}">
+                        {% endif %}
+                        
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">{{ package.name }}</h5>
+                                <span class="badge" style="background: var(--gradient-primary)">{{ package.get_transportation_type_display }}</span>
+                            </div>
+                            
+                            <p class="card-text text-muted small mb-3">
+                                <i class="fas fa-clock me-1"></i> {{ package.duration_hours }} {% trans "hours" %}
+                            </p>
+                            
+                            {% if package.short_description %}
+                            <p class="card-text">{{ package.short_description }}</p>
+                            {% else %}
+                            <p class="card-text">{{ package.description|truncatewords:15 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fs-5 fw-bold text-primary">AED {{ package.price }}</span>
+                                <div class="text-muted small">
+                                    <span>{% trans "Starting from" %}</span><br>
+                                    <span>{% trans "per person" %}</span>
+                                </div>
+                            </div>
+                            <a href="{% url 'package_detail' package.slug %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye me-1"></i>{% trans "View Details" %}</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="Page navigation" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if current_transportation %}&transportation={{ current_transportation }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&laquo;</span>
+                    </li>
+                    {% endif %}
+                    
+                    {% for i in paginator.page_range %}
+                    {% if page_obj.number == i %}
+                    <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}{% if current_transportation %}&transportation={{ current_transportation }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">{{ i }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if current_transportation %}&transportation={{ current_transportation }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/package-names-scroll.css' %}">
+<style>
+    .package-card {
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .package-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .featured-badge {
+        position: absolute;
+        top: 15px;
+        right: 0;
+        background: var(--gradient-warning);
+        color: white;
+        padding: 0.25rem 1rem;
+        font-size: 0.8rem;
+        font-weight: bold;
+        z-index: 1;
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+        transition: all 0.5s ease;
+    }
+    
+    .package-card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .card-title {
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+    
+    .card-footer {
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1rem 1.5rem;
+    }
+    
+    .text-primary {
+        color: var(--primary-color) !important;
+    }
+    
+    .btn-outline-primary {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    /* Category and filter styling */
+    .card-header {
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+    }
+    
+    .list-group-item.active {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .form-select:focus, .form-check-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(230, 126, 34, 0.25);
+    }
+    
+    .btn-primary {
+        background: var(--gradient-primary);
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        background: var(--gradient-dark);
+    }
+    
+    /* Add animation */
+    .package-card {
+        animation: fadeInUp 0.5s ease-out forwards;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}

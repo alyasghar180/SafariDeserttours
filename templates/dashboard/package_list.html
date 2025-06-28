@@ -1,0 +1,124 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Packages" %} | Dashboard | Desert Safari Dubai{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{% trans "Packages Management" %}</h1>
+    <div>
+        <a href="{% url 'admin:packages_package_add' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> {% trans "Add New Package" %}
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h5 class="card-title mb-0">{% trans "Filter Packages" %}</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="category" class="form-label">{% trans "Category" %}</label>
+                <select name="category" id="category" class="form-select">
+                    <option value="">{% trans "All Categories" %}</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"i" %}selected{% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="is_active" class="form-label">{% trans "Status" %}</label>
+                <select name="is_active" id="is_active" class="form-select">
+                    <option value="">{% trans "All Statuses" %}</option>
+                    <option value="true" {% if is_active == 'true' %}selected{% endif %}>{% trans "Active" %}</option>
+                    <option value="false" {% if is_active == 'false' %}selected{% endif %}>{% trans "Inactive" %}</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="is_featured" class="form-label">{% trans "Featured" %}</label>
+                <select name="is_featured" id="is_featured" class="form-select">
+                    <option value="">{% trans "All" %}</option>
+                    <option value="true" {% if is_featured == 'true' %}selected{% endif %}>{% trans "Featured" %}</option>
+                    <option value="false" {% if is_featured == 'false' %}selected{% endif %}>{% trans "Not Featured" %}</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="search" class="form-label">{% trans "Search" %}</label>
+                <input type="text" class="form-control" id="search" name="search" value="{{ search }}" placeholder="{% trans 'Package name, description...' %}">
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-filter me-1"></i> {% trans "Apply Filters" %}
+                </button>
+                <a href="{% url 'dashboard_package_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-undo me-1"></i> {% trans "Reset" %}
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Packages Table -->
+<div class="card shadow-sm">
+    <div class="card-header bg-light">
+        <h5 class="card-title mb-0">{% trans "Packages" %}</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>{% trans "Name" %}</th>
+                        <th>{% trans "Category" %}</th>
+                        <th>{% trans "Price" %}</th>
+                        <th>{% trans "Duration" %}</th>
+                        <th>{% trans "Transportation" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th>{% trans "Featured" %}</th>
+                        <th>{% trans "Actions" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for package in packages %}
+                    <tr>
+                        <td>{{ package.name }}</td>
+                        <td>{{ package.category.name }}</td>
+                        <td>AED {{ package.price }}{% if package.child_price %}<br><small>Child: AED {{ package.child_price }}</small>{% endif %}</td>
+                        <td>{{ package.duration_hours }} {% trans "hours" %}</td>
+                        <td>{{ package.get_transportation_type_display }}</td>
+                        <td>
+                            <span class="badge {% if package.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                {% if package.is_active %}{% trans "Active" %}{% else %}{% trans "Inactive" %}{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge {% if package.is_featured %}bg-warning{% else %}bg-light text-dark{% endif %}">
+                                {% if package.is_featured %}{% trans "Featured" %}{% else %}{% trans "No" %}{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{% url 'package_detail' package.slug %}" class="btn btn-sm btn-outline-info" target="_blank" title="{% trans 'View' %}">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'admin:packages_package_change' package.id %}" class="btn btn-sm btn-outline-primary" title="{% trans 'Edit' %}">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-3">{% trans "No packages found matching your criteria" %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

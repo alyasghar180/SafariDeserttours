@@ -1,0 +1,121 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Reviews" %} | Dashboard | Desert Safari Dubai{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{% trans "Reviews Management" %}</h1>
+</div>
+
+<!-- Filters -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h5 class="card-title mb-0">{% trans "Filter Reviews" %}</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="is_approved" class="form-label">{% trans "Status" %}</label>
+                <select name="is_approved" id="is_approved" class="form-select">
+                    <option value="">{% trans "All Reviews" %}</option>
+                    <option value="true" {% if is_approved == 'true' %}selected{% endif %}>{% trans "Approved" %}</option>
+                    <option value="false" {% if is_approved == 'false' %}selected{% endif %}>{% trans "Pending Approval" %}</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="rating" class="form-label">{% trans "Rating" %}</label>
+                <select name="rating" id="rating" class="form-select">
+                    <option value="">{% trans "All Ratings" %}</option>
+                    <option value="5" {% if rating == '5' %}selected{% endif %}>5 {% trans "Stars" %}</option>
+                    <option value="4" {% if rating == '4' %}selected{% endif %}>4 {% trans "Stars" %}</option>
+                    <option value="3" {% if rating == '3' %}selected{% endif %}>3 {% trans "Stars" %}</option>
+                    <option value="2" {% if rating == '2' %}selected{% endif %}>2 {% trans "Stars" %}</option>
+                    <option value="1" {% if rating == '1' %}selected{% endif %}>1 {% trans "Star" %}</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="search" class="form-label">{% trans "Search" %}</label>
+                <input type="text" class="form-control" id="search" name="search" value="{{ search }}" placeholder="{% trans 'Review title, comment, package name...' %}">
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-filter me-1"></i> {% trans "Apply Filters" %}
+                </button>
+                <a href="{% url 'dashboard_review_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-undo me-1"></i> {% trans "Reset" %}
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Reviews Table -->
+<div class="card shadow-sm">
+    <div class="card-header bg-light">
+        <h5 class="card-title mb-0">{% trans "Reviews" %}</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>{% trans "Package" %}</th>
+                        <th>{% trans "Reviewer" %}</th>
+                        <th>{% trans "Rating" %}</th>
+                        <th>{% trans "Title" %}</th>
+                        <th>{% trans "Comment" %}</th>
+                        <th>{% trans "Date" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th>{% trans "Actions" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for review in reviews %}
+                    <tr>
+                        <td>{{ review.package.name }}</td>
+                        <td>
+                            {% if review.user %}
+                            {{ review.user.get_full_name|default:review.user.username }}
+                            {% else %}
+                            {{ review.name }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="text-warning">
+                                {% for i in "12345"|make_list %}
+                                <i class="fas {% if forloop.counter <= review.rating %}fa-star{% else %}fa-star text-muted opacity-50{% endif %}"></i>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td>{{ review.title }}</td>
+                        <td>{{ review.comment|truncatechars:50 }}</td>
+                        <td>{{ review.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <span class="badge {% if review.is_approved %}bg-success{% else %}bg-warning{% endif %}">
+                                {% if review.is_approved %}{% trans "Approved" %}{% else %}{% trans "Pending" %}{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{% url 'dashboard_toggle_review_approval' review.id %}" class="btn btn-sm {% if review.is_approved %}btn-outline-warning{% else %}btn-outline-success{% endif %}" title="{% if review.is_approved %}{% trans 'Unapprove' %}{% else %}{% trans 'Approve' %}{% endif %}">
+                                    <i class="fas {% if review.is_approved %}fa-times{% else %}fa-check{% endif %}"></i>
+                                </a>
+                                <a href="{% url 'admin:packages_packagereview_change' review.id %}" class="btn btn-sm btn-outline-primary" title="{% trans 'Edit' %}">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-3">{% trans "No reviews found matching your criteria" %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

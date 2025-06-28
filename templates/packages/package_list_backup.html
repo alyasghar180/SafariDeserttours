@@ -1,0 +1,526 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% if active_category %}{{ active_category.name }} - {% endif %}{% trans "Desert Safari Packages" %} | Desert Safari Dubai{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero Section */
+    .package-hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('{% static "images/desert-packages-hero.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 100px 0;
+        margin-bottom: 60px;
+        text-align: center;
+    }
+    
+    .package-hero h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .package-hero p {
+        font-size: 1.25rem;
+        margin-bottom: 30px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    /* Quick Filters */
+    .quick-filters {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 40px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .quick-filters h5 {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    
+    /* Package Cards */
+    .package-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+    
+    .package-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+    
+    .package-img {
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .package-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .package-card:hover .package-img img {
+        transform: scale(1.05);
+    }
+    
+    .featured-badge {
+        position: absolute;
+        top: 15px;
+        right: -30px;
+        background: #ff6b35;
+        color: white;
+        padding: 5px 35px;
+        transform: rotate(45deg);
+        font-size: 0.8rem;
+        font-weight: 600;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .package-content {
+        padding: 20px;
+    }
+    
+    .package-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #2c3e50;
+    }
+    
+    .package-price {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #0d6efd;
+        margin-bottom: 15px;
+    }
+    
+    .package-price small {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .package-features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 20px 0;
+    }
+    
+    .package-features li {
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        color: #555;
+    }
+    
+    .package-features i {
+        color: #0d6efd;
+        margin-right: 8px;
+        width: 20px;
+        text-align: center;
+    }
+    
+    /* Sidebar */
+    .filter-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+    }
+    
+    .filter-card .card-header {
+        background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+        color: white;
+        padding: 15px 20px;
+        border: none;
+        font-weight: 600;
+    }
+    
+    .filter-card .card-body {
+        padding: 20px;
+    }
+    
+    /* Why Choose Us Section */
+    .why-choose {
+        background: #f8f9fa;
+        padding: 60px 0;
+        margin: 60px 0;
+    }
+    
+    .feature-card {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        text-align: center;
+        height: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(13, 110, 253, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 1.75rem;
+        color: #0d6efd;
+    }
+    
+    /* CTA Section */
+    .cta-section {
+        background: linear-gradient(135deg, #ff6b35 0%, #ff8c5a 100%);
+        color: white;
+        padding: 60px 0;
+        border-radius: 12px;
+        margin: 60px 0;
+        text-align: center;
+    }
+    
+    .cta-section h2 {
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+    
+    .cta-section p {
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 991.98px) {
+        .package-hero {
+            padding: 80px 0;
+        }
+        
+        .package-hero h1 {
+            font-size: 2.5rem;
+        }
+        
+        .package-hero p {
+            font-size: 1.1rem;
+        }
+    }
+    
+    @media (max-width: 767.98px) {
+        .package-hero {
+            padding: 60px 0;
+        }
+        
+        .package-hero h1 {
+            font-size: 2rem;
+        }
+        
+        .package-hero p {
+            font-size: 1rem;
+        }
+        
+        .quick-filters {
+            padding: 20px 15px;
+        }
+        
+        .filter-card {
+            margin-bottom: 30px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="package-hero">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="animate__animated animate__fadeInDown">
+                    {% if active_category %}
+                        {{ active_category.name }} Packages
+                    {% else %}
+                        Desert Safari Experiences
+                    {% endif %}
+                </h1>
+                <p class="animate__animated animate__fadeInUp animate__delay-1s">
+                    Discover the perfect desert adventure with our carefully curated packages. 
+                    From thrilling dune bashing to magical sunsets, we have something for everyone.
+                </p>
+                <a href="#packages" class="btn btn-light btn-lg animate__animated animate__fadeInUp animate__delay-2s">
+                    <i class="fas fa-arrow-down me-2"></i> Explore Packages
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <!-- Quick Filters -->
+    <div class="quick-filters">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <h5><i class="fas fa-filter me-2"></i>Filter by Category</h5>
+                <select class="form-select" onchange="window.location.href=this.value">
+                    <option value="{% url 'package_list' %}" {% if not active_category %}selected{% endif %}>All Categories</option>
+                    {% for category in categories %}
+                    <option value="{% url 'package_list_by_category' category.slug %}" {% if active_category.id == category.id %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <h5><i class="fas fa-sort-amount-down me-2"></i>Sort By</h5>
+                <select class="form-select" onchange="window.location.href=this.value">
+                    <option value="?sort=featured" {% if current_sort == 'featured' or not current_sort %}selected{% endif %}>Featured</option>
+                    <option value="?sort=price_asc" {% if current_sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="?sort=price_desc" {% if current_sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="?sort=duration_asc" {% if current_sort == 'duration_asc' %}selected{% endif %}>Duration: Short to Long</option>
+                    <option value="?sort=duration_desc" {% if current_sort == 'duration_desc' %}selected{% endif %}>Duration: Long to Short</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <h5><i class="fas fa-car me-2"></i>Transportation</h5>
+                <select class="form-select" onchange="window.location.href=this.value">
+                    <option value="?transportation=" {% if not current_transportation %}selected{% endif %}>All Types</option>
+                    <option value="?transportation=self_drive" {% if current_transportation == 'self_drive' %}selected{% endif %}>Self Drive</option>
+                    <option value="?transportation=bus" {% if current_transportation == 'bus' %}selected{% endif %}>Bus</option>
+                    <option value="?transportation=4x4" {% if current_transportation == '4x4' %}selected{% endif %}>4x4 Vehicle</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row" id="packages">
+        <!-- Sidebar -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="filter-card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>Categories</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'package_list' %}" class="list-group-item list-group-item-action {% if not active_category %}active{% endif %}">
+                            <i class="fas fa-boxes me-2"></i> All Packages
+                        </a>
+                        {% for category in categories %}
+                        <a href="{% url 'package_list_by_category' category.slug %}" 
+                           class="list-group-item list-group-item-action {% if active_category.id == category.id %}active{% endif %}">
+                            {% if category.icon %}<i class="{{ category.icon }} me-2"></i>{% endif %}
+                            {{ category.name }}
+                            <span class="badge bg-primary float-end">{{ category.package_count }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Need Help?</h5>
+                </div>
+                <div class="card-body">
+                    <p class="small">Our travel experts are here to help you choose the perfect desert safari experience.</p>
+                    <a href="{% url 'contact' %}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-envelope me-2"></i> Contact Us
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            {% if active_category and active_category.description %}
+            <div class="alert alert-info">
+                <h4>About {{ active_category.name }}</h4>
+                <p class="mb-0">{{ active_category.description }}</p>
+            </div>
+            {% endif %}
+            
+            {% if not packages %}
+            <div class="alert alert-warning">
+                <i class="fas fa-info-circle me-2"></i>
+                No packages found matching your criteria. Please try different filters.
+            </div>
+            {% endif %}
+            
+            <div class="row">
+                {% for package in packages %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="package-card h-100">
+                        {% if package.is_featured %}
+                        <div class="featured-badge">Featured</div>
+                        {% endif %}
+                        
+                        <div class="package-img">
+                            {% if package.featured_image %}
+                            <img src="{{ package.featured_image.url }}" alt="{{ package.name }}">
+                            {% else %}
+                            <img src="{% static 'images/package-placeholder.jpg' %}" alt="{{ package.name }}">
+                            {% endif %}
+                        </div>
+                        
+                        <div class="package-content">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h3 class="package-title">{{ package.name }}</h3>
+                                <span class="badge bg-primary">{{ package.get_transportation_type_display }}</span>
+                            </div>
+                            
+                            <p class="text-muted small mb-3">
+                                <i class="far fa-clock me-1"></i> {{ package.duration_hours }} hours
+                            </p>
+                            
+                            {% if package.short_description %}
+                            <p class="mb-3">{{ package.short_description }}</p>
+                            {% else %}
+                            <p class="mb-3">{{ package.description|truncatewords:20 }}</p>
+                            {% endif %}
+                            
+                            <ul class="package-features">
+                                <li><i class="fas fa-map-marker-alt"></i> {{ package.location.name|default:"Dubai Desert" }}</li>
+                                <li><i class="fas fa-utensils"></i> {% if package.includes_meal %}Meal Included{% else %}No Meal{% endif %}</li>
+                                <li><i class="fas fa-users"></i> Up to {{ package.max_people }} people</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="card-footer bg-white border-top-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="package-price">AED {{ package.price }}</span>
+                                    <small class="text-muted d-block">per person</small>
+                                </div>
+                                <a href="{% url 'package_detail' package.slug %}" class="btn btn-primary">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="Page navigation" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if current_transportation %}&transportation={{ current_transportation }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&laquo;</span>
+                    </li>
+                    {% endif %}
+                    
+                    {% for i in paginator.page_range %}
+                    {% if page_obj.number == i %}
+                    <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}{% if current_transportation %}&transportation={{ current_transportation }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}">{{ i }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if current_transportation %}&transportation={{ current_transportation }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Why Choose Us Section -->
+    <section class="why-choose">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2>Why Choose Our Desert Safari?</h2>
+                <p class="lead">Experience the best of Dubai's desert with our premium services</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h4>Safety First</h4>
+                        <p>Your safety is our top priority. All our vehicles and equipment are regularly maintained and our guides are trained in first aid.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h4>5-Star Service</h4>
+                        <p>We pride ourselves on providing exceptional service to ensure you have an unforgettable desert experience.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h4>24/7 Support</h4>
+                        <p>Our customer support team is available around the clock to assist you with any questions or concerns.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2>Ready for an Unforgettable Adventure?</h2>
+                    <p>Book your desert safari experience today and create memories that will last a lifetime.</p>
+                    <a href="#packages" class="btn btn-light btn-lg me-3">View All Packages</a>
+                    <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %}

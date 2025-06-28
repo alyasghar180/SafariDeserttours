@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Cancel Booking" %} - {{ booking.booking_id }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">{% trans "Cancel Booking" %}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h4 class="alert-heading">{% trans "Are you sure you want to cancel this booking?" %}</h4>
+                        <p>{% trans "This action cannot be undone. If you have already paid for this booking, please contact our customer service for refund information." %}</p>
+                    </div>
+                    
+                    <div class="booking-details mb-4">
+                        <h5>{% trans "Booking Details" %}</h5>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>{% trans "Booking Reference" %}</th>
+                                <td>{{ booking.booking_id }}</td>
+                            </tr>
+                            <tr>
+                                <th>{% trans "Package" %}</th>
+                                <td>{{ booking.package.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>{% trans "Date" %}</th>
+                                <td>{{ booking.booking_date }}</td>
+                            </tr>
+                            <tr>
+                                <th>{% trans "Total Price" %}</th>
+                                <td>AED {{ booking.total_price }}</td>
+                            </tr>
+                            <tr>
+                                <th>{% trans "Status" %}</th>
+                                <td>{{ booking.get_status_display }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <form method="post" action="{% url 'booking_cancel' booking.booking_id %}">
+                        {% csrf_token %}
+                        <div class="form-group mb-3">
+                            <label for="cancellation_reason">{% trans "Reason for Cancellation" %}</label>
+                            <textarea name="cancellation_reason" id="cancellation_reason" class="form-control" rows="4" placeholder="{% trans 'Please let us know why you are cancelling this booking...' %}"></textarea>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'booking_detail' booking.booking_id %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> {% trans "Back to Booking" %}
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-times-circle"></i> {% trans "Confirm Cancellation" %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

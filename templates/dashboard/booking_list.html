@@ -1,0 +1,401 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block extra_css %}
+<style>
+    /* Clickable row styles */
+    .booking-row {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    .booking-row:hover {
+        background-color: rgba(0,0,0,0.05) !important;
+    }
+    .booking-row td:first-child {
+        position: relative;
+    }
+    .booking-row td:first-child::before {
+        content: "👆 Click";
+        position: absolute;
+        font-size: 0.7rem;
+        opacity: 0;
+        top: -5px;
+        left: 0;
+        background: #007bff;
+        color: white;
+        padding: 1px 5px;
+        border-radius: 3px;
+        transition: opacity 0.2s ease;
+        pointer-events: none;
+    }
+    .booking-row:hover td:first-child::before {
+        opacity: 1;
+    }
+    
+    /* Compact table styles */
+    .booking-table {
+        font-size: 0.8rem;
+    }
+    .booking-table th, .booking-table td {
+        padding: 0.35rem 0.35rem;
+        vertical-align: middle;
+    }
+    .booking-table .small {
+        font-size: 0.7rem;
+        margin-bottom: 0;
+        line-height: 1.1;
+    }
+    .booking-table .badge {
+        font-size: 0.7rem !important;
+        padding: 0.2rem 0.4rem;
+    }
+    
+    /* Action buttons */
+    .booking-actions .btn {
+        padding: 0.2rem 0.35rem;
+        font-size: 0.7rem;
+    }
+    .booking-actions .btn-group {
+        margin-bottom: 0.2rem;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 991px) {
+        .booking-table .d-flex {
+            flex-wrap: wrap;
+        }
+        .booking-actions .btn-group {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .booking-table {
+            font-size: 0.75rem;
+        }
+        .booking-table th, .booking-table td {
+            padding: 0.3rem 0.3rem;
+        }
+        .card-body {
+            padding: 0.75rem;
+        }
+        .card-header {
+            padding: 0.5rem 0.75rem;
+        }
+        .hide-on-mobile {
+            display: none !important;
+        }
+    }
+    
+    /* Mobile optimized table */
+    @media (max-width: 575px) {
+        .mobile-booking-info {
+            display: block !important;
+            font-size: 0.7rem;
+            color: #666;
+            margin-top: 3px;
+        }
+        .mobile-booking-info span {
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .mobile-booking-info i {
+            margin-right: 2px;
+            color: #007bff;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Make booking rows clickable
+        const bookingRows = document.querySelectorAll('.booking-row');
+        
+        bookingRows.forEach(row => {
+            // Add title attribute to indicate clickable
+            row.setAttribute('title', 'Click to view booking details');
+            row.style.cursor = 'pointer';
+            
+            // Highlight the row on hover
+            row.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = 'rgba(0,123,255,0.05)';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '';
+            });
+            
+            row.addEventListener('click', function(e) {
+                // Don't navigate if clicking on a button or link
+                if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || 
+                    e.target.closest('a') || e.target.closest('button') || 
+                    e.target.closest('form') || e.target.closest('.modal')) {
+                    return;
+                }
+                
+                // Navigate to the booking detail page
+                const bookingUrl = this.dataset.bookingUrl;
+                if (bookingUrl) {
+                    window.location.href = bookingUrl;
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+{% block title %}{% trans "Bookings" %} | Dashboard | Desert Safari Dubai{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <h1 class="h5">{% trans "Bookings Management" %}</h1>
+    <div>
+        <a href="{% url 'admin:bookings_booking_add' %}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> {% trans "Add" %}
+        </a>
+    </div>
+</div>
+
+<!-- Dashboard Stats -->
+<div class="row mb-2">
+    <div class="col-md-3 col-6 mb-3">
+        <div class="card shadow-sm h-100 border-left-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-primary fw-bold">{% trans "Pending" %}</h6>
+                        <h2 class="fw-bold mb-0">{{ status_counts.pending|default:0 }}</h2>
+                    </div>
+                    <div class="icon-circle bg-primary text-white">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6 mb-3">
+        <div class="card shadow-sm h-100 border-left-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-success fw-bold">{% trans "Confirmed" %}</h6>
+                        <h2 class="fw-bold mb-0">{{ status_counts.confirmed|default:0 }}</h2>
+                    </div>
+                    <div class="icon-circle bg-success text-white">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6 mb-3">
+        <div class="card shadow-sm h-100 border-left-danger">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-danger fw-bold">{% trans "Cancelled" %}</h6>
+                        <h2 class="fw-bold mb-0">{{ status_counts.cancelled|default:0 }}</h2>
+                    </div>
+                    <div class="icon-circle bg-danger text-white">
+                        <i class="fas fa-times"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6 mb-3">
+        <div class="card shadow-sm h-100 border-left-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-info fw-bold">{% trans "Total" %}</h6>
+                        <h2 class="fw-bold mb-0">{{ total_bookings }}</h2>
+                    </div>
+                    <div class="icon-circle bg-info text-white">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card shadow-sm mb-2">
+    <div class="card-header bg-light py-2">
+        <h6 class="card-title mb-0">{% trans "Filter Bookings" %}</h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-2">
+            <div class="col-md-3 col-sm-6">
+                <label for="status" class="form-label small fw-bold mb-1">{% trans "Status" %}</label>
+                <select name="status" id="status" class="form-select form-select-sm">
+                    <option value="">{% trans "All Statuses" %}</option>
+                    {% for status_code, status_name in status_choices %}
+                    <option value="{{ status_code }}" {% if selected_status == status_code %}selected{% endif %}>{{ status_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <label for="date_from" class="form-label small fw-bold mb-1">{% trans "From" %}</label>
+                <input type="date" class="form-control form-control-sm" id="date_from" name="date_from" value="{{ date_from }}">
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <label for="date_to" class="form-label small fw-bold mb-1">{% trans "To" %}</label>
+                <input type="date" class="form-control form-control-sm" id="date_to" name="date_to" value="{{ date_to }}">
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <label for="search" class="form-label small fw-bold mb-1">{% trans "Search" %}</label>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="search" name="search" value="{{ search }}" placeholder="{% trans 'ID, Name...' %}">
+                </div>
+            </div>
+            <div class="col-12 mt-2">
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fas fa-filter"></i> {% trans "Filter" %}
+                </button>
+                <a href="{% url 'dashboard_booking_list' %}" class="btn btn-outline-secondary btn-sm ms-1">
+                    <i class="fas fa-undo"></i> {% trans "Reset" %}
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Bookings Table -->
+<div class="card shadow-sm">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+        <h6 class="card-title mb-0">{% trans "Bookings" %}</h6>
+        <span class="badge bg-primary">{{ bookings.count }}</span>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped booking-table align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th width="10%">{% trans "ID" %}</th>
+                        <th width="18%">{% trans "Customer" %}</th>
+                        <th width="15%" class="hide-on-mobile">{% trans "Package" %}</th>
+                        <th width="10%" class="hide-on-mobile">{% trans "Date" %}</th>
+                        <th width="10%" class="hide-on-mobile">{% trans "Total" %}</th>
+                        <th width="10%">{% trans "Status" %}</th>
+                        <th width="27%" class="text-center">{% trans "Actions" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr class="booking-row {% if booking.status == 'pending' %}table-warning{% elif booking.status == 'confirmed' %}table-success{% elif booking.status == 'cancelled' %}table-danger{% endif %}" data-booking-url="{% url 'dashboard_booking_detail' booking.booking_id %}">
+                        <td>
+                            <strong>{{ booking.booking_id }}</strong>
+                            <div class="small text-muted">{{ booking.created_at|date:"M d, Y" }}</div>
+                        </td>
+                        <td>
+                            <strong>{{ booking.full_name }}</strong><br>
+                            <div class="text-truncate">{{ booking.email }}</div>
+                            <div>{{ booking.phone }}</div>
+                            
+                            <!-- Mobile-only info (shown when other columns are hidden) -->
+                            <div class="mobile-booking-info d-none">
+                                <span><i class="fas fa-box"></i> {{ booking.package.name }}</span>
+                                <span><i class="fas fa-calendar"></i> {{ booking.booking_date }}</span>
+                                <span><i class="fas fa-money-bill"></i> AED {{ booking.total_price }}</span>
+                            </div>
+                        </td>
+                        <td class="hide-on-mobile">
+                            <strong>{{ booking.package.name }}</strong>
+                            <div class="small">{{ booking.adults }} {% trans "adults" %}{% if booking.children > 0 %}, {{ booking.children }} {% trans "children" %}{% endif %}</div>
+                        </td>
+                        <td class="hide-on-mobile">
+                            <strong>{{ booking.booking_date }}</strong>
+                        </td>
+                        <td class="hide-on-mobile">
+                            <strong>AED {{ booking.total_price }}</strong>
+                        </td>
+                        <td>
+                            <span class="badge {% if booking.status == 'pending' %}bg-warning{% elif booking.status == 'confirmed' or booking.status == 'paid' %}bg-success{% elif booking.status == 'cancelled' or booking.status == 'refunded' %}bg-danger{% else %}bg-secondary{% endif %} fs-6 d-block">
+                                {{ booking.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-wrap justify-content-center gap-1 booking-actions">
+                                <!-- Contact Buttons -->
+                                <div class="btn-group">
+                                    <a href="tel:{{ booking.phone }}" class="btn btn-success" title="{% trans 'Call' %}">
+                                        <i class="fas fa-phone"></i>
+                                    </a>
+                                    <a href="https://wa.me/{{ booking.phone|cut:'+' }}" target="_blank" class="btn btn-success" title="{% trans 'WhatsApp' %}">
+                                        <i class="fab fa-whatsapp"></i>
+                                    </a>
+                                    <a href="mailto:{{ booking.email }}" class="btn btn-success" title="{% trans 'Email' %}">
+                                        <i class="fas fa-envelope"></i>
+                                    </a>
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="btn-group">
+                                    <a href="{% url 'dashboard_booking_detail' booking.booking_id %}" class="btn btn-primary" title="{% trans 'View Details' %}">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    
+                                    {% if booking.status == 'pending' %}
+                                    <form method="post" action="{% url 'dashboard_update_booking_status' booking.booking_id %}" class="d-inline" onsubmit="return confirm('{% trans "Are you sure you want to confirm this booking?" %}')">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="status" value="confirmed">
+                                        <button type="submit" class="btn btn-success" title="{% trans 'Confirm' %}">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                    
+                                    {% if booking.status != 'cancelled' and booking.status != 'refunded' %}
+                                    <button type="button" class="btn btn-danger" title="{% trans 'Cancel' %}" data-bs-toggle="modal" data-bs-target="#cancelModal{{ booking.id }}">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Cancel Modal -->
+                            <div class="modal fade" id="cancelModal{{ booking.id }}" tabindex="-1" aria-labelledby="cancelModalLabel{{ booking.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-danger text-white">
+                                            <h5 class="modal-title" id="cancelModalLabel{{ booking.id }}">{% trans "Cancel Booking" %} {{ booking.booking_id }}</h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <form method="post" action="{% url 'dashboard_update_booking_status' booking.booking_id %}">
+                                            {% csrf_token %}
+                                            <div class="modal-body">
+                                                <input type="hidden" name="status" value="cancelled">
+                                                <div class="mb-3">
+                                                    <label for="reason{{ booking.id }}" class="form-label fw-bold">{% trans "Cancellation Reason" %}</label>
+                                                    <textarea class="form-control" id="reason{{ booking.id }}" name="reason" rows="3" required></textarea>
+                                                    <div class="form-text">{% trans "Please provide a reason for cancellation. This will be recorded in the booking history." %}</div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+                                                <button type="submit" class="btn btn-danger">{% trans "Cancel Booking" %}</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5">{% trans "No bookings found matching your criteria" %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Update Booking" %} - {{ booking.booking_id }} | Desert Safari Dubai{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+                    {% if user.is_authenticated %}
+                    <li class="breadcrumb-item"><a href="{% url 'booking_history' %}">{% trans "My Bookings" %}</a></li>
+                    {% endif %}
+                    <li class="breadcrumb-item"><a href="{% url 'booking_detail' booking.booking_id %}">{% trans "Booking" %} {{ booking.booking_id }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{% trans "Update Booking" %}</li>
+                </ol>
+            </nav>
+            
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">{% trans "Update Your Booking" %}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="package-summary mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <h4 class="mb-0">{{ package.name }}</h4>
+                            <span class="badge bg-secondary ms-3">{{ package.get_transportation_type_display }}</span>
+                        </div>
+                        <p class="text-muted">
+                            <i class="fas fa-clock me-1"></i> {{ package.duration_hours }} {% trans "hours" %} | 
+                            <i class="fas fa-tag me-1"></i> {% trans "AED" %} {{ package.price }} {% trans "per adult" %}
+                            {% if package.child_price %}
+                            | {% trans "AED" %} {{ package.child_price }} {% trans "per child" %}
+                            {% endif %}
+                        </p>
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading">{% trans "Booking Reference" %}: {{ booking.booking_id }}</h6>
+                            <p class="mb-0 small">{% trans "Current Status" %}: {{ booking.get_status_display }}</p>
+                        </div>
+                    </div>
+                    
+                    <form method="post" id="booking-form">
+                        {% csrf_token %}
+                        {{ form.package }}
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5>{% trans "1. Update Date" %}</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.booking_date.id_for_label }}" class="form-label">{% trans "Booking Date" %}</label>
+                                    {{ form.booking_date }}
+                                    <div class="form-text">{{ form.booking_date.help_text }}</div>
+                                    {% if form.booking_date.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.booking_date.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5>{% trans "2. Number of People" %}</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.adults.id_for_label }}" class="form-label">{% trans "Adults" %}</label>
+                                    {{ form.adults }}
+                                    {% if form.adults.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.adults.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.children.id_for_label }}" class="form-label">{% trans "Children" %} <small class="text-muted">({% trans "under 12 years" %})</small></label>
+                                    {{ form.children }}
+                                    {% if form.children.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.children.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if addon_forms %}
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5>{% trans "3. Update Add-ons (Optional)" %}</h5>
+                                <p class="text-muted small">{% trans "Enhance your desert safari experience with these optional add-ons." %}</p>
+                            </div>
+                            
+                            {% for addon_item in addon_forms %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h6 class="card-title">{{ addon_item.relation.addon.name }}</h6>
+                                                <p class="card-text small text-muted">{{ addon_item.relation.addon.description }}</p>
+                                            </div>
+                                            {% if addon_item.initial_quantity > 0 %}
+                                            <span class="badge bg-success">{% trans "Selected" %}</span>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between align-items-center mt-3">
+                                            <div>
+                                                {% if addon_item.relation.special_price %}
+                                                <p class="mb-0">
+                                                    <span class="text-decoration-line-through text-muted">AED {{ addon_item.relation.addon.price }}</span>
+                                                    <span class="text-success fw-bold">AED {{ addon_item.relation.special_price }}</span>
+                                                    {% if addon_item.relation.addon.is_per_person %}<small class="text-muted">/ {% trans "person" %}</small>{% endif %}
+                                                </p>
+                                                {% else %}
+                                                <p class="mb-0">
+                                                    <span class="fw-bold">AED {{ addon_item.relation.addon.price }}</span>
+                                                    {% if addon_item.relation.addon.is_per_person %}<small class="text-muted">/ {% trans "person" %}</small>{% endif %}
+                                                </p>
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                {{ addon_item.form.addon }}
+                                                {{ addon_item.form.quantity }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5>{% trans "4. Your Information" %}</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.full_name.id_for_label }}" class="form-label">{% trans "Full Name" %}</label>
+                                    {{ form.full_name }}
+                                    {% if form.full_name.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.full_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">{% trans "Email Address" %}</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.phone.id_for_label }}" class="form-label">{% trans "Phone Number" %}</label>
+                                    {{ form.phone }}
+                                    {% if form.phone.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.phone.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.nationality.id_for_label }}" class="form-label">{% trans "Nationality" %} <small class="text-muted">({% trans "optional" %})</small></label>
+                                    {{ form.nationality }}
+                                    {% if form.nationality.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.nationality.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5>{% trans "5. Pickup Information" %}</h5>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="{{ form.pickup_location.id_for_label }}" class="form-label">{% trans "Pickup Location" %}</label>
+                                    {{ form.pickup_location }}
+                                    {% if form.pickup_location.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.pickup_location.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.hotel_name.id_for_label }}" class="form-label">{% trans "Hotel Name" %} <small class="text-muted">({% trans "if applicable" %})</small></label>
+                                    {{ form.hotel_name }}
+                                    {% if form.hotel_name.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.hotel_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.hotel_room.id_for_label }}" class="form-label">{% trans "Room Number" %} <small class="text-muted">({% trans "if applicable" %})</small></label>
+                                    {{ form.hotel_room }}
+                                    {% if form.hotel_room.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.hotel_room.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="{{ form.special_requests.id_for_label }}" class="form-label">{% trans "Special Requests" %} <small class="text-muted">({% trans "optional" %})</small></label>
+                                    {{ form.special_requests }}
+                                    {% if form.special_requests.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.special_requests.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5>{% trans "6. Payment Method" %}</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.payment_method.id_for_label }}" class="form-label">{% trans "Select Payment Method" %}</label>
+                                    {{ form.payment_method }}
+                                    {% if form.payment_method.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.payment_method.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="alert alert-warning">
+                                    <h6 class="alert-heading">{% trans "Important Information" %}</h6>
+                                    <ul class="mb-0 small">
+                                        <li>{% trans "Changes to your booking may affect availability and pricing." %}</li>
+                                        <li>{% trans "If you change the date, pickup times will be reconfirmed." %}</li>
+                                        <li>{% trans "You will receive an email confirmation after your booking is updated." %}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'booking_detail' booking.booking_id %}" class="btn btn-outline-secondary">{% trans "Cancel Changes" %}</a>
+                            <button type="submit" class="btn btn-primary">{% trans "Update Booking" %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Price calculation logic would go here in a real application
+        const adultInput = document.getElementById('{{ form.adults.id_for_label }}');
+        const childrenInput = document.getElementById('{{ form.children.id_for_label }}');
+        const addonQuantityInputs = document.querySelectorAll('.addon-quantity');
+        
+        // Example function to update price (would be implemented in a real app)
+        function updateTotalPrice() {
+            // This is just a placeholder - real implementation would calculate based on
+            // selected options, addons, etc.
+            console.log('Price would be updated here');
+        }
+        
+        // Add event listeners
+        if (adultInput) adultInput.addEventListener('change', updateTotalPrice);
+        if (childrenInput) childrenInput.addEventListener('change', updateTotalPrice);
+        
+        addonQuantityInputs.forEach(input => {
+            input.addEventListener('change', updateTotalPrice);
+        });
+        
+        // Initial calculation
+        updateTotalPrice();
+    });
+</script>
+{% endblock %}

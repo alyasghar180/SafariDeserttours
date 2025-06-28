@@ -1,0 +1,328 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Booking" %} {{ booking.booking_id }} | Dashboard | Desert Safari Dubai{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{% trans "Booking Details" %}: {{ booking.booking_id }}</h1>
+    <div>
+        <a href="{% url 'dashboard_booking_list' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> {% trans "Back to Bookings" %}
+        </a>
+        <a href="{% url 'admin:bookings_booking_change' booking.id %}" class="btn btn-primary">
+            <i class="fas fa-edit me-1"></i> {% trans "Edit Booking" %}
+        </a>
+    </div>
+</div>
+
+<!-- Quick Action Buttons -->
+<div class="action-buttons mb-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <span class="fw-bold me-2">{% trans "Quick Actions:" %}</span>
+                        <span class="badge {% if booking.status == 'pending' %}bg-warning{% elif booking.status == 'confirmed' or booking.status == 'paid' %}bg-success{% elif booking.status == 'cancelled' or booking.status == 'refunded' %}bg-danger{% else %}bg-secondary{% endif %} fs-6 me-2">
+                            {{ booking.get_status_display }}
+                        </span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        {% if booking.status == 'pending' %}
+                        <form method="post" action="{% url 'dashboard_update_booking_status' booking.booking_id %}" class="d-inline" onsubmit="return confirm('{% trans "Are you sure you want to confirm this booking?" %}')">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="confirmed">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check me-1"></i> {% trans "Confirm Booking" %}
+                            </button>
+                        </form>
+                        {% endif %}
+                        
+                        {% if booking.status != 'cancelled' and booking.status != 'refunded' %}
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelBookingModal">
+                            <i class="fas fa-times me-1"></i> {% trans "Cancel Booking" %}
+                        </button>
+                        {% endif %}
+                        
+                        <div class="btn-group">
+                            <a href="tel:{{ booking.phone }}" class="btn btn-outline-success">
+                                <i class="fas fa-phone me-1"></i> {% trans "Call" %}
+                            </a>
+                            <a href="https://wa.me/{{ booking.phone|cut:'+' }}" target="_blank" class="btn btn-outline-success">
+                                <i class="fab fa-whatsapp me-1"></i> {% trans "WhatsApp" %}
+                            </a>
+                            <a href="mailto:{{ booking.email }}" class="btn btn-outline-success">
+                                <i class="fas fa-envelope me-1"></i> {% trans "Email" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Management Card -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">{% trans "Booking Status Management" %}</h5>
+        <span class="badge {% if booking.status == 'pending' %}bg-warning{% elif booking.status == 'confirmed' or booking.status == 'paid' %}bg-success{% elif booking.status == 'cancelled' or booking.status == 'refunded' %}bg-danger{% else %}bg-secondary{% endif %} fs-6">
+            {{ booking.get_status_display }}
+        </span>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{% url 'dashboard_update_booking_status' booking.booking_id %}" class="row g-3">
+            {% csrf_token %}
+            <div class="col-md-6">
+                <label for="status" class="form-label fw-bold">{% trans "Update Status" %}</label>
+                <select name="status" id="status" class="form-select form-select-lg">
+                    {% for status_code, status_name in status_choices %}
+                    <option value="{{ status_code }}" {% if booking.status == status_code %}selected{% endif %}>{{ status_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6" id="cancellationReasonContainer" {% if booking.status != 'cancelled' %}style="display: none;"{% endif %}>
+                <label for="reason" class="form-label fw-bold">{% trans "Cancellation Reason" %}</label>
+                <textarea class="form-control" id="reason" name="reason" rows="2">{{ booking.cancellation_reason }}</textarea>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary btn-lg mt-2">
+                    <i class="fas fa-save me-1"></i> {% trans "Update Status" %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Customer Information -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">{% trans "Customer Information" %}</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="fw-bold mb-0">{{ booking.full_name }}</h6>
+                </div>
+                
+                <table class="table table-sm">
+                    <tbody>
+                        <tr>
+                            <th scope="row" width="30%">{% trans "Email" %}</th>
+                            <td>{{ booking.email }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{% trans "Phone" %}</th>
+                            <td>{{ booking.phone }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{% trans "Nationality" %}</th>
+                            <td>{{ booking.nationality|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{% trans "Registered User" %}</th>
+                            <td>
+                                {% if booking.user %}
+                                <a href="{% url 'admin:accounts_customuser_change' booking.user.id %}">{{ booking.user.email }}</a>
+                                {% else %}
+                                {% trans "Guest Booking" %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Booking Details -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">{% trans "Booking Details" %}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tbody>
+                        <tr>
+                            <th scope="row" width="30%">{% trans "Package" %}</th>
+                            <td>
+                                <a href="{% url 'admin:packages_package_change' booking.package.id %}">{{ booking.package.name }}</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{% trans "Booking Date" %}</th>
+                            <td>{{ booking.booking_date }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{% trans "Group Size" %}</th>
+                            <td>{{ booking.adults }} {% trans "adults" %}{% if booking.children > 0 %}, {{ booking.children }} {% trans "children" %}{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{% trans "Total Price" %}</th>
+                            <td>AED {{ booking.total_price }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{% trans "Payment Method" %}</th>
+                            <td>{{ booking.get_payment_method_display }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{% trans "Payment Status" %}</th>
+                            <td>
+                                <span class="badge {% if booking.is_paid %}bg-success{% else %}bg-warning{% endif %}">
+                                    {% if booking.is_paid %}{% trans "Paid" %}{% else %}{% trans "Unpaid" %}{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{% trans "Created" %}</th>
+                            <td>{{ booking.created_at }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{% trans "Last Updated" %}</th>
+                            <td>{{ booking.updated_at }}</td>
+                        </tr>
+                        {% if booking.cancelled_at %}
+                        <tr>
+                            <th scope="row">{% trans "Cancelled At" %}</th>
+                            <td>{{ booking.cancelled_at }}</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pickup Information -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">{% trans "Pickup Information" %}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tbody>
+                        <tr>
+                            <th scope="row" width="30%">{% trans "Emirate" %}</th>
+                            <td>{{ booking.emirate.name|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{% trans "Pickup Location" %}</th>
+                            <td>{{ booking.pickup_location.name|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{% trans "Custom Location" %}</th>
+                            <td>{{ booking.pickup_location_text|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{% trans "Pickup Time" %}</th>
+                            <td>{{ booking.pickup_time|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{% trans "Hotel Name" %}</th>
+                            <td>{{ booking.hotel_name|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{% trans "Hotel Room" %}</th>
+                            <td>{{ booking.hotel_room|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{% trans "Address Details" %}</th>
+                            <td>{{ booking.address_details|default:"-" }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Special Requests & Addons -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">{% trans "Special Requests & Addons" %}</h5>
+            </div>
+            <div class="card-body">
+                <h6>{% trans "Special Requests" %}</h6>
+                <p>{{ booking.special_requests|default:"-"|linebreaks }}</p>
+                
+                <h6 class="mt-4">{% trans "Addons" %}</h6>
+                {% if booking.addons.exists %}
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Addon" %}</th>
+                            <th>{% trans "Quantity" %}</th>
+                            <th>{% trans "Price" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for addon in booking.addons.all %}
+                        <tr>
+                            <td>{{ addon.addon.name }}</td>
+                            <td>{{ addon.quantity }}</td>
+                            <td>AED {{ addon.price }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>{% trans "No addons selected" %}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+<!-- Cancel Booking Modal -->
+<div class="modal fade" id="cancelBookingModal" tabindex="-1" aria-labelledby="cancelBookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="cancelBookingModalLabel">{% trans "Cancel Booking" %} {{ booking.booking_id }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'dashboard_update_booking_status' booking.booking_id %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="status" value="cancelled">
+                    <div class="mb-3">
+                        <label for="modal-reason" class="form-label fw-bold">{% trans "Cancellation Reason" %}</label>
+                        <textarea class="form-control" id="modal-reason" name="reason" rows="3" required></textarea>
+                        <div class="form-text">{% trans "Please provide a reason for cancellation. This will be recorded in the booking history." %}</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+                    <button type="submit" class="btn btn-danger">{% trans "Cancel Booking" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusSelect = document.getElementById('status');
+        const cancellationReasonContainer = document.getElementById('cancellationReasonContainer');
+        const reasonField = document.getElementById('reason');
+        
+        statusSelect.addEventListener('change', function() {
+            if (this.value === 'cancelled') {
+                cancellationReasonContainer.style.display = 'block';
+                reasonField.setAttribute('required', 'required');
+            } else {
+                cancellationReasonContainer.style.display = 'none';
+                reasonField.removeAttribute('required');
+            }
+        });
+    });
+</script>
+{% endblock %}

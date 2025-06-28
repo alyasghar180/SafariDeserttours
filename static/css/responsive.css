@@ -1,0 +1,339 @@
+/* Responsive CSS for Safari Desert Tours
+   Enhances responsiveness across all device sizes */
+
+/* Global Responsive Adjustments */
+@media (max-width: 1199px) {
+  .container {
+    max-width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .package-card {
+    height: 100%;
+  }
+}
+
+/* Large Tablets and Small Desktops */
+@media (max-width: 991px) {
+  /* General */
+  h1 {
+    font-size: 2.5rem;
+  }
+  
+  h2 {
+    font-size: 2rem;
+  }
+  
+  /* Navigation */
+  .navbar-collapse {
+    background-color: rgba(44, 62, 80, 0.95);
+    border-radius: 0 0 10px 10px;
+    padding: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .navbar-nav .nav-item {
+    margin: 5px 0;
+  }
+  
+  /* Hero Section */
+  .hero-content {
+    padding: 0 20px;
+  }
+  
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  /* Dashboard Specific */
+  .dashboard-wrapper {
+    flex-direction: column;
+  }
+  
+  .dashboard-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    left: 0;
+    top: 0;
+    z-index: 1030;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: none;
+  }
+  
+  .dashboard-sidebar.show {
+    display: block;
+    height: auto;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .dashboard-main {
+    margin-left: 0;
+    width: 100%;
+    padding: 15px;
+  }
+  
+  .sidebar-collapsed .dashboard-main {
+    margin-left: 0;
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .dashboard-title {
+    margin-bottom: 15px;
+  }
+  
+  .dashboard-actions {
+    position: static;
+    transform: none;
+    width: 100%;
+    justify-content: flex-start;
+    margin-bottom: 15px;
+  }
+  
+  /* Stats Cards */
+  .stats-card {
+    margin-bottom: 20px;
+  }
+  
+  /* Data Cards */
+  .data-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .data-card-header .btn-group {
+    margin-top: 10px;
+  }
+}
+
+/* Tablets and Large Phones */
+@media (max-width: 767px) {
+  /* General */
+  .section-title h2 {
+    font-size: 1.8rem;
+  }
+  
+  /* Package Cards */
+  .package-card {
+    margin-bottom: 20px;
+  }
+  
+  /* Features Section */
+  .feature-card {
+    margin-bottom: 20px;
+  }
+  
+  /* Dashboard Tables */
+  .table-dashboard th, 
+  .table-dashboard td {
+    padding: 10px 5px;
+    font-size: 0.9rem;
+  }
+  
+  .table-responsive {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  /* Dashboard Charts */
+  .data-card {
+    margin-bottom: 20px;
+  }
+}
+
+/* Small Phones */
+@media (max-width: 575px) {
+  /* General */
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  p {
+    font-size: 0.95rem;
+  }
+  
+  /* Hero Section */
+  .hero {
+    min-height: 450px;
+  }
+  
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .hero-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Dashboard */
+  .dashboard-title {
+    font-size: 1.3rem;
+  }
+  
+  /* Stats Cards */
+  .stats-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+  
+  .stats-info h3 {
+    font-size: 1.5rem;
+  }
+  
+  .stats-info h5 {
+    font-size: 0.9rem;
+  }
+  
+  /* Tables */
+  .action-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
+  }
+  
+  /* Hide less important columns on small screens */
+  .table-dashboard .hide-on-mobile,
+  .booking-table .hide-on-mobile {
+    display: none;
+  }
+  
+  /* Admin Quick Dashboard */
+  .admin-quick-card {
+    padding: 10px;
+  }
+  
+  .admin-quick-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+  
+  .admin-quick-info h4 {
+    font-size: 0.9rem;
+  }
+  
+  /* Form Controls */
+  .form-control, .btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  /* Floating WhatsApp Button */
+  .whatsapp-float {
+    bottom: 20px;
+    right: 20px;
+    height: 50px;
+    padding: 0 15px;
+  }
+  
+  .whatsapp-float i {
+    font-size: 24px;
+  }
+  
+  .whatsapp-text {
+    font-size: 14px;
+  }
+}
+
+/* Extra Small Devices */
+@media (max-width: 400px) {
+  /* Dashboard */
+  .dashboard-main {
+    padding: 10px;
+  }
+  
+  /* Stats Cards */
+  .stats-card {
+    padding: 10px;
+  }
+  
+  .stats-info h3 {
+    font-size: 1.3rem;
+  }
+  
+  /* Tables */
+  .table-dashboard th, 
+  .table-dashboard td {
+    padding: 8px 4px;
+    font-size: 0.8rem;
+  }
+  
+  /* Booking Status Badges */
+  .badge {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+  }
+}
+
+/* Landscape Mode for Phones */
+@media (max-height: 500px) and (orientation: landscape) {
+  .dashboard-sidebar {
+    max-height: 100vh;
+    overflow-y: auto;
+  }
+  
+  .navbar-collapse {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  .hero {
+    min-height: 350px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .dashboard-sidebar,
+  .whatsapp-float,
+  .navbar,
+  .footer {
+    display: none !important;
+  }
+  
+  .dashboard-main {
+    margin-left: 0;
+    padding: 0;
+  }
+  
+  .dashboard-wrapper {
+    display: block;
+  }
+  
+  .data-card {
+    break-inside: avoid;
+  }
+}
+
+/* Fix for iOS Safari 100vh issue */
+@supports (-webkit-touch-callout: none) {
+  .dashboard-sidebar {
+    height: -webkit-fill-available;
+  }
+  
+  .hero {
+    min-height: 550px;
+  }
+} 

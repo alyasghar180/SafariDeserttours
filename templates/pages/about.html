@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}About Us | Desert Safari Dubai{% endblock %}
+
+{% block content %}
+<!-- About Hero Section -->
+<section class="about-hero" style="background-image: url('{% static "images/gallery/About Desert Safari Dubai.png" %}');">
+    <div class="container">
+        <div class="hero-content text-center">
+            <h1 class="hero-title">About Desert Safari Dubai</h1>
+            <p class="hero-subtitle">Your premier destination for authentic desert experiences</p>
+        </div>
+    </div>
+</section>
+
+<!-- About Us Section -->
+<section class="about-section py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="about-image">
+                    <img src="{% static 'images/gallery/our story.jpg' %}" alt="Our Story - Desert Safari Dubai" class="img-fluid rounded shadow-sm">
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="section-title mb-4">
+                    <h2>Our Story</h2>
+                </div>
+                <div class="about-content">
+                    <p>Founded in 2010, Desert Safari Dubai has been providing unforgettable desert experiences to visitors from around the world. What started as a small family business with just two 4x4 vehicles has grown into one of Dubai's most trusted desert safari operators.</p>
+                    <p>Our mission is to showcase the natural beauty and cultural heritage of the Arabian desert while providing exceptional service and creating lasting memories for our guests.</p>
+                    <p>With over a decade of experience, we've perfected the art of desert hospitality, combining adventure, tradition, and comfort in every safari package we offer.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Values Section -->
+<section class="values-section py-5 bg-light">
+    <div class="container">
+        <div class="section-title text-center mb-5">
+            <h2>Our Values</h2>
+            <p>The principles that guide everything we do</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="value-card text-center p-4 h-100 bg-white rounded shadow-sm">
+                    <div class="value-icon mb-3">
+                        <i class="fas fa-heart fa-3x text-primary"></i>
+                    </div>
+                    <h3 class="value-title">Passion</h3>
+                    <p>We're passionate about the desert and sharing its wonders with visitors. Our enthusiasm is evident in every aspect of our service.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="value-card text-center p-4 h-100 bg-white rounded shadow-sm">
+                    <div class="value-icon mb-3">
+                        <i class="fas fa-leaf fa-3x text-primary"></i>
+                    </div>
+                    <h3 class="value-title">Sustainability</h3>
+                    <p>We're committed to preserving the desert ecosystem and minimizing our environmental footprint through responsible tourism practices.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="value-card text-center p-4 h-100 bg-white rounded shadow-sm">
+                    <div class="value-icon mb-3">
+                        <i class="fas fa-users fa-3x text-primary"></i>
+                    </div>
+                    <h3 class="value-title">Customer Focus</h3>
+                    <p>Your satisfaction is our priority. We go above and beyond to ensure every guest has a memorable and enjoyable experience.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- New Testimonials Section -->
+<section class="testimonials-section py-5">
+    <div class="container">
+        <div class="section-title text-center mb-5">
+            <h2>Guest Experiences</h2>
+            <p>What our visitors say about their desert adventures</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="testimonial-card text-center p-5 bg-white rounded shadow-sm">
+                                <div class="testimonial-content mb-4">
+                                    <i class="fas fa-quote-left fa-2x text-muted opacity-25 mb-3"></i>
+                                    <p class="lead">"The evening desert safari was the highlight of our Dubai trip! The dune bashing was thrilling, and the camp experience with traditional food and entertainment was unforgettable."</p>
+                                </div>
+                                <div class="testimonial-author">
+                                    <div class="testimonial-avatar mb-3">
+                                        <img src="{% static 'images/testimonial1.jpg' %}" alt="Michael Chen" class="img-fluid rounded-circle mx-auto" width="80">
+                                    </div>
+                                    <h5 class="mb-1">Michael Chen</h5>
+                                    <p class="text-muted mb-0">Singapore</p>
+                                    <div class="rating mt-2">
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <div class="testimonial-card text-center p-5 bg-white rounded shadow-sm">
+                                <div class="testimonial-content mb-4">
+                                    <i class="fas fa-quote-left fa-2x text-muted opacity-25 mb-3"></i>
+                                    <p class="lead">"We took the morning safari with our kids and it was perfect! The guides were knowledgeable and friendly, and the camel riding was a hit with the children. Highly recommend!"</p>
+                                </div>
+                                <div class="testimonial-author">
+                                    <div class="testimonial-avatar mb-3">
+                                        <img src="{% static 'images/testimonial2.jpg' %}" alt="Emma Williams" class="img-fluid rounded-circle mx-auto" width="80">
+                                    </div>
+                                    <h5 class="mb-1">Emma Williams</h5>
+                                    <p class="text-muted mb-0">United Kingdom</p>
+                                    <div class="rating mt-2">
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="carousel-item">
+                            <div class="testimonial-card text-center p-5 bg-white rounded shadow-sm">
+                                <div class="testimonial-content mb-4">
+                                    <i class="fas fa-quote-left fa-2x text-muted opacity-25 mb-3"></i>
+                                    <p class="lead">"The overnight desert safari was an experience of a lifetime. Sleeping under the stars in the desert was incredible. The staff was professional and made sure we were comfortable throughout."</p>
+                                </div>
+                                <div class="testimonial-author">
+                                    <div class="testimonial-avatar mb-3">
+                                        <img src="{% static 'images/testimonial3.jpg' %}" alt="Carlos Rodriguez" class="img-fluid rounded-circle mx-auto" width="80">
+                                    </div>
+                                    <h5 class="mb-1">Carlos Rodriguez</h5>
+                                    <p class="text-muted mb-0">Spain</p>
+                                    <div class="rating mt-2">
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon bg-primary rounded-circle" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon bg-primary rounded-circle" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                    
+                    <div class="carousel-indicators position-relative mt-4">
+                        <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="0" class="active bg-primary" aria-current="true" aria-label="Slide 1"></button>
+                        <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="1" class="bg-primary" aria-label="Slide 2"></button>
+                        <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="2" class="bg-primary" aria-label="Slide 3"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section" data-bg-image="{% static 'images/desert-cta.jpg' %}">
+    <div class="container">
+        <div class="cta-content text-center">
+            <h2 class="cta-title">Ready to Experience the Magic of the Desert?</h2>
+            <p class="cta-text">Book your desert safari adventure today and create memories that will last a lifetime!</p>
+            <a href="{% url 'package_list' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-calendar-check me-2"></i>Browse Packages
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages.css' %}">
+{% endblock %}

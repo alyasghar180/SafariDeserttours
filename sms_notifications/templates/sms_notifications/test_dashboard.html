@@ -1,0 +1,137 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}SMS Test Dashboard{% endblock %}
+
+{% block dashboard_content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">SMS Test Dashboard</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active">SMS Test</li>
+    </ol>
+
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <!-- SMS Configuration Card -->
+        <div class="col-xl-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-cogs me-1"></i>
+                    SMS Configuration
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'update_sms_config' %}">
+                        {% csrf_token %}
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="enable_customer_sms" name="enable_customer_sms" {% if config.enable_customer_sms %}checked{% endif %}>
+                            <label class="form-check-label" for="enable_customer_sms">Enable Customer SMS Notifications</label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="enable_admin_sms" name="enable_admin_sms" {% if config.enable_admin_sms %}checked{% endif %}>
+                            <label class="form-check-label" for="enable_admin_sms">Enable Admin SMS Notifications</label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="admin_phone_number" class="form-label">Admin Phone Number</label>
+                                        <input type="text" class="form-control" id="admin_phone_number" name="admin_phone_number" value="{{ config.admin_phone_number }}" placeholder="+971582240451">
+            <div class="form-text">Phone number must be in E.164 format (e.g., +971582240451)</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="twilio_account_sid" class="form-label">Twilio Account SID</label>
+                            <input type="text" class="form-control" id="twilio_account_sid" name="twilio_account_sid" value="{{ config.twilio_account_sid }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="twilio_auth_token" class="form-label">Twilio Auth Token</label>
+                            <input type="password" class="form-control" id="twilio_auth_token" name="twilio_auth_token" value="{{ config.twilio_auth_token }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="twilio_phone_number" class="form-label">Twilio Phone Number</label>
+                            <input type="text" class="form-control" id="twilio_phone_number" name="twilio_phone_number" value="{{ config.twilio_phone_number }}" placeholder="+15005550006">
+                            <div class="form-text">Phone number must be in E.164 format (e.g., +15005550006)</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Configuration</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test SMS Card -->
+        <div class="col-xl-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-paper-plane me-1"></i>
+                    Send Test SMS
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'send_test_sms' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="phone_number" class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="phone_number" name="phone_number" placeholder="+971582240451" required>
+                            <div class="form-text">Phone number must be in E.164 format (e.g., +971582240451)</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" name="message" rows="3">This is a test message from Desert Safari</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Test SMS</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Test Booking SMS Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-envelope me-1"></i>
+                    Test Booking SMS
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'test_booking_sms' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="booking_id" class="form-label">Booking ID</label>
+                            <select class="form-select" id="booking_id" name="booking_id" required>
+                                <option value="">Select a booking</option>
+                                {% for booking in recent_bookings %}
+                                    <option value="{{ booking.booking_id }}">{{ booking.booking_id }} - {{ booking.full_name }} ({{ booking.phone }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">SMS Type</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sms_type" id="sms_type_both" value="both" checked>
+                                <label class="form-check-label" for="sms_type_both">
+                                    Both Customer & Admin
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sms_type" id="sms_type_customer" value="customer">
+                                <label class="form-check-label" for="sms_type_customer">
+                                    Customer Only
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sms_type" id="sms_type_admin" value="admin">
+                                <label class="form-check-label" for="sms_type_admin">
+                                    Admin Only
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Booking SMS</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

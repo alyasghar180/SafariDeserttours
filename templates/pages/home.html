@@ -1,0 +1,446 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - Desert Safari Dubai{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/slideshow.css' %}">
+{% endblock %}
+
+{% block content %}
+{% if user.is_staff %}
+<!-- Admin Quick Access Dashboard -->
+<section class="admin-dashboard-section">
+    <div class="container">
+        <div class="admin-dashboard-wrapper" data-aos="fade-down">
+            <div class="admin-dashboard-header">
+                <h2><i class="fas fa-tachometer-alt me-2"></i> Admin Quick Dashboard</h2>
+                <a href="{% url 'dashboard_home' %}" class="btn btn-sm btn-primary">Full Dashboard <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+            <div class="admin-dashboard-content">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="admin-quick-card">
+                            <div class="admin-quick-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="admin-quick-info">
+                                <h4>Bookings</h4>
+                                <a href="{% url 'dashboard_booking_list' %}" class="btn btn-sm btn-outline-primary">Manage</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="admin-quick-card">
+                            <div class="admin-quick-icon" style="background: var(--gradient-success)">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="admin-quick-info">
+                                <h4>Packages</h4>
+                                <a href="{% url 'dashboard_package_list' %}" class="btn btn-sm btn-outline-success">Manage</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="admin-quick-card">
+                            <div class="admin-quick-icon" style="background: var(--gradient-info)">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="admin-quick-info">
+                                <h4>Users</h4>
+                                <a href="{% url 'dashboard_user_list' %}" class="btn btn-sm btn-outline-info">Manage</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="admin-quick-card">
+                            <div class="admin-quick-icon" style="background: var(--gradient-warning)">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="admin-quick-info">
+                                <h4>Reviews</h4>
+                                <a href="{% url 'dashboard_review_list' %}" class="btn btn-sm btn-outline-warning">Manage</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Hero Section -->
+<section class="hero">
+    <!-- Slideshow Background -->
+    <div class="slideshow-background"></div>
+    
+    <!-- Overlay -->
+    <div class="hero-overlay"></div>
+    
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">Experience the Magic of Dubai Desert</h1>
+            <p class="hero-subtitle">Unforgettable adventures await in the golden sands of Dubai</p>
+            <div>
+                <a href="#packages" class="btn btn-primary btn-lg hero-btn">
+                    <i class="fas fa-box me-2"></i>View Packages
+                </a>
+                <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg hero-btn">
+                    <i class="fas fa-envelope me-2"></i>Contact Us
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Packages Section -->
+<section class="packages-section" id="packages">
+    <!-- Package Names Infinite Scroll -->
+    <section class="package-names-scroll-section">
+        <div class="package-names-scroll-container">
+            {% for package in all_packages %}
+                <a href="{% url 'package_detail' package.slug %}" class="package-name-item {% if package.transportation_type == '4x4' %}{% if 'VIP' in package.name %}premium{% else %}featured{% endif %}{% elif package.transportation_type == 'self_drive' %}self-drive{% elif package.transportation_type == 'bus' %}bus{% endif %}">
+                    <i class="fas {% if package.transportation_type == '4x4' %}fa-truck-monster{% elif package.transportation_type == 'self_drive' %}fa-car{% elif package.transportation_type == 'bus' %}fa-bus{% endif %} me-2"></i>
+                    {{ package.name }}
+                </a>
+            {% endfor %}
+            
+            <!-- Duplicate for infinite scroll effect -->
+            {% for package in all_packages %}
+                <a href="{% url 'package_detail' package.slug %}" class="package-name-item {% if package.transportation_type == '4x4' %}{% if 'VIP' in package.name %}premium{% else %}featured{% endif %}{% elif package.transportation_type == 'self_drive' %}self-drive{% elif package.transportation_type == 'bus' %}bus{% endif %}">
+                    <i class="fas {% if package.transportation_type == '4x4' %}fa-truck-monster{% elif package.transportation_type == 'self_drive' %}fa-car{% elif package.transportation_type == 'bus' %}fa-bus{% endif %} me-2"></i>
+                    {{ package.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </section>
+
+    <div class="container py-5">
+        <div class="section-header text-center mb-5">
+            <h2 class="section-title">Our Safari Packages</h2>
+            <p class="section-subtitle">Choose from our selection of exceptional desert experiences</p>
+        </div>
+        <div class="row g-4">
+            {% if featured_packages %}
+                {% for package in featured_packages %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="package-card">
+                            <div class="package-img">
+                                {% if package.featured_image %}
+                                    <img src="{{ package.featured_image.url }}" alt="{{ package.name }}">
+                                {% else %}
+                                    <img src="{% static 'images/desert-placeholder.jpg' %}" alt="{{ package.name }}">
+                                {% endif %}
+                                {% if package.is_featured %}
+                                    <span class="package-badge">Featured</span>
+                                {% endif %}
+                            </div>
+                            <div class="package-content">
+                                <h3 class="package-title">{{ package.name }}</h3>
+                                <div class="package-price mb-3">
+                                    <span>{{ package.price }} AED</span> <small class="text-muted">per person</small>
+                                    {% if package.child_price %}
+                                    <div><small>Child: {{ package.child_price }} AED</small></div>
+                                    {% endif %}
+                                </div>
+                                <p>{{ package.short_description|default:package.description|truncatewords:20 }}</p>
+                                
+                                <ul class="package-features">
+                                    {% if package.duration_hours %}
+                                    <li><i class="fas fa-clock"></i> {{ package.duration_hours }} hours</li>
+                                    {% endif %}
+                                    <li><i class="fas fa-users"></i> {{ package.get_transportation_type_display }}</li>
+                                    <li><i class="fas fa-map-marker-alt"></i> Dubai Desert Conservation Reserve</li>
+                                    <li><i class="fas fa-utensils"></i> Meals included</li>
+                                </ul>
+                                
+                                <div class="d-flex mt-4">
+                                    <a href="{% url 'package_detail' package.slug %}" class="btn btn-outline-primary me-2">
+                                        <i class="fas fa-info-circle me-1"></i> Details
+                                    </a>
+                                    <a href="{% url 'create_booking' package.slug %}" class="btn btn-primary flex-grow-1">
+                                        <i class="fas fa-calendar-check me-1"></i> Book Now
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <!-- Fallback Packages -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="package-card">
+                        <div class="package-img">
+                            <img src="{% static 'images/gallery/Evening Desert Safari.jpg' %}" alt="Evening Desert Safari">
+                            <span class="package-badge">Featured</span>
+                        </div>
+                        <div class="package-content">
+                            <h3 class="package-title">Evening Desert Safari</h3>
+                            <div class="package-price mb-3">
+                                <span>249 AED</span> <small class="text-muted">per person</small>
+                            </div>
+                            <p>Experience the magic of the desert at sunset with our most popular package.</p>
+                            <ul class="package-features">
+                                <li><i class="fas fa-clock"></i> 6 hours</li>
+                                <li><i class="fas fa-users"></i> 4x4 Transportation</li>
+                                <li><i class="fas fa-map-marker-alt"></i> Dubai Desert Conservation Reserve</li>
+                                <li><i class="fas fa-utensils"></i> BBQ Dinner included</li>
+                            </ul>
+                            <a href="#" class="btn btn-primary w-100">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="package-card">
+                        <div class="package-img">
+                            <img src="{% static 'images/gallery/Family Adventure Safari.png' %}" alt="Family Adventure Safari">
+                        </div>
+                        <div class="package-content">
+                            <h3 class="package-title">Family Adventure Safari</h3>
+                            <div class="package-price mb-3">
+                                <span>299 AED</span> <small class="text-muted">per person</small>
+                                <div><small>Child: 199 AED</small></div>
+                            </div>
+                            <p>Perfect for families with activities suitable for all ages.</p>
+                            <ul class="package-features">
+                                <li><i class="fas fa-clock"></i> 5 hours</li>
+                                <li><i class="fas fa-child"></i> Child-friendly activities</li>
+                                <li><i class="fas fa-map-marker-alt"></i> Dubai Desert Conservation Reserve</li>
+                                <li><i class="fas fa-utensils"></i> Family-style dinner</li>
+                            </ul>
+                            <a href="#" class="btn btn-primary w-100">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="package-card">
+                        <div class="package-img">
+                            <img src="{% static 'images/gallery/VIP Luxury Safari.jpeg' %}" alt="VIP Luxury Safari">
+                            <span class="package-badge">Premium</span>
+                        </div>
+                        <div class="package-content">
+                            <h3 class="package-title">VIP Luxury Safari</h3>
+                            <div class="package-price mb-3">
+                                <span>499 AED</span> <small class="text-muted">per person</small>
+                            </div>
+                            <p>Experience the desert in ultimate luxury with private transportation and exclusive services.</p>
+                            <ul class="package-features">
+                                <li><i class="fas fa-clock"></i> 7 hours</li>
+                                <li><i class="fas fa-star"></i> Private luxury 4x4</li>
+                                <li><i class="fas fa-map-marker-alt"></i> Premium desert camp</li>
+                                <li><i class="fas fa-utensils"></i> Gourmet dining</li>
+                            </ul>
+                            <a href="#" class="btn btn-primary w-100">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section py-5 bg-light">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h2 class="section-title">Why Choose Our Desert Safari?</h2>
+            <p class="section-subtitle">We offer the best desert experience in Dubai with premium services and unforgettable adventures</p>
+        </div>
+        
+        <div class="row mb-5">
+            <div class="col-lg-10 mx-auto">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <p class="lead mb-4">We're committed to providing:</p>
+                        <ul class="list-unstyled">
+                            <li class="mb-3"><i class="fas fa-check-circle text-primary me-2"></i> <strong>Fair & Transparent Pricing</strong> – No hidden fees. You'll see the full breakdown before you confirm.</li>
+                            <li class="mb-3"><i class="fas fa-check-circle text-primary me-2"></i> <strong>Flexible Options</strong> – Customize your tour experience the way you like it.</li>
+                            <li class="mb-3"><i class="fas fa-check-circle text-primary me-2"></i> <strong>Quick Booking Confirmation</strong> – Get an instant confirmation with all your booking details.</li>
+                            <li class="mb-3"><i class="fas fa-check-circle text-primary me-2"></i> <strong>24/7 Customer Support</strong> – Our team is always ready to assist via call, WhatsApp, or email.</li>
+                            <li class="mb-0"><i class="fas fa-check-circle text-primary me-2"></i> <strong>Satisfaction Guaranteed</strong> – If you're not satisfied, we'll do our best to make it right.</li>
+                        </ul>
+                        <p class="mt-3 mb-0 text-center"><em>Your experience matters to us — from the first click to the final drop-off.</em></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-car-side"></i>
+                    </div>
+                    <h3>Premium Transportation</h3>
+                    <p>Choose from luxury 4x4s, buses, or self-drive options. All vehicles are air-conditioned and maintained to the highest standards.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3>Authentic BBQ Dinner</h3>
+                    <p>Enjoy a delicious buffet with both vegetarian and non-vegetarian options, prepared by expert chefs.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-theater-masks"></i>
+                    </div>
+                    <h3>Cultural Entertainment</h3>
+                    <p>Experience traditional Belly Dance, Fire Show, and Tanura Show performances in an authentic setting.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Expert Guides</h3>
+                    <p>Our multilingual guides ensure an educational and entertaining experience for all guests.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Safety First</h3>
+                    <p>All activities are supervised by trained professionals, with regular safety checks and maintenance.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h3>Photo Opportunities</h3>
+                    <p>Capture stunning sunset views and memorable moments at the best photo spots in the desert.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Activities Section -->
+<section class="activities-scroll-section">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h2 class="section-title">Included Activities</h2>
+            <p class="section-subtitle">Enjoy a wide range of activities included in all our packages</p>
+        </div>
+    </div>
+    
+    <!-- Activities Scroll Container -->
+    <div class="activities-scroll-container">
+        <!-- First set of activities -->
+        <div class="activity-scroll-item">
+            <i class="fas fa-campground activity-scroll-icon"></i>
+            <h5 class="activity-scroll-title">Camel Riding</h5>
+        </div>
+        
+        <div class="activity-scroll-item">
+            <i class="fas fa-snowboarding activity-scroll-icon"></i>
+            <h5 class="activity-scroll-title">Sand Boarding</h5>
+        </div>
+        
+        <div class="activity-scroll-item">
+            <i class="fas fa-paint-brush activity-scroll-icon"></i>
+            <h5 class="activity-scroll-title">Henna Tattoo</h5>
+        </div>
+        
+        <div class="activity-scroll-item">
+            <i class="fas fa-smoking activity-scroll-icon"></i>
+            <h5 class="activity-scroll-title">Sheesha</h5>
+        </div>
+        
+        <div class="activity-scroll-item">
+            <i class="fas fa-tshirt activity-scroll-icon"></i>
+            <h5 class="activity-scroll-title">Arabic Dress</h5>
+        </div>
+        
+        <div class="activity-scroll-item">
+            <i class="fas fa-coffee activity-scroll-icon"></i>
+            <h5 class="activity-scroll-title">Refreshments</h5>
+        </div>
+        
+        <div class="activity-scroll-item">
+            <i class="fas fa-utensils activity-scroll-icon"></i>
+            <h5 class="activity-scroll-title">BBQ Dinner</h5>
+        </div>
+        
+        <div class="activity-scroll-item">
+            <i class="fas fa-fire activity-scroll-icon"></i>
+            <h5 class="activity-scroll-title">Fire Show</h5>
+        </div>
+        
+        <!-- Duplicate items for infinite scroll effect -->
+        <div class="activity-scroll-item">
+            <i class="fas fa-campground activity-scroll-icon"></i>
+            <h5 class="activity-scroll-title">Camel Riding</h5>
+        </div>
+        
+        <div class="activity-scroll-item">
+            <i class="fas fa-snowboarding activity-scroll-icon"></i>
+            <h5 class="activity-scroll-title">Sand Boarding</h5>
+        </div>
+        
+        <div class="activity-scroll-item">
+            <i class="fas fa-paint-brush activity-scroll-icon"></i>
+            <h5 class="activity-scroll-title">Henna Tattoo</h5>
+        </div>
+        
+        <div class="activity-scroll-item">
+            <i class="fas fa-smoking activity-scroll-icon"></i>
+            <h5 class="activity-scroll-title">Sheesha</h5>
+        </div>
+        
+        <div class="activity-scroll-item">
+            <i class="fas fa-tshirt activity-scroll-icon"></i>
+            <h5 class="activity-scroll-title">Arabic Dress</h5>
+        </div>
+        
+        <div class="activity-scroll-item">
+            <i class="fas fa-coffee activity-scroll-icon"></i>
+            <h5 class="activity-scroll-title">Refreshments</h5>
+        </div>
+        
+        <div class="activity-scroll-item">
+            <i class="fas fa-utensils activity-scroll-icon"></i>
+            <h5 class="activity-scroll-title">BBQ Dinner</h5>
+        </div>
+        
+        <div class="activity-scroll-item">
+            <i class="fas fa-fire activity-scroll-icon"></i>
+            <h5 class="activity-scroll-title">Fire Show</h5>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section py-5" style="background-image: url('{% static "images/desert-cta.jpg" %}')">
+    <div class="container">
+        <div class="cta-content text-center text-white">
+            <h2 class="display-4 mb-4">Ready for an Unforgettable Desert Experience?</h2>
+            <p class="lead mb-4">Book your desert safari adventure today and create memories that will last a lifetime!</p>
+            <a href="{% url 'package_list' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-calendar-check me-2"></i>Book Now
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/slideshow.js' %}"></script>
+{% endblock %}

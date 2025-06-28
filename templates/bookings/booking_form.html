@@ -1,0 +1,424 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Book {{ package.name }} | Desert Safari Dubai{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'package_list' %}">{% trans "Packages" %}</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'package_detail' package.slug %}">{{ package.name }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{% trans "Book Now" %}</li>
+                </ol>
+            </nav>
+            
+            <!-- Alternative Booking Methods -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h5 class="mb-3 mb-md-0">{% trans "Prefer to book directly?" %}</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-md-end">
+                                <a href="https://wa.me/971582240451?text=Hi%20Desert%20Safari%20Dubai,%20I'm%20interested%20in%20booking%20the%20{{ package.name|urlencode }}%20package." class="btn btn-success me-2" target="_blank">
+                                    <i class="fab fa-whatsapp me-2"></i>{% trans "WhatsApp" %}
+                                </a>
+                                <a href="tel:+971582240451" class="btn btn-info">
+                                    <i class="fas fa-phone-alt me-2"></i>{% trans "Call" %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-lg border-0 rounded-3 overflow-hidden">
+                <div class="card-header bg-primary text-white p-4">
+                    <h3 class="mb-0 fw-bold">{% trans "Book Your Desert Safari" %}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="package-summary mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <h4 class="mb-0">{{ package.name }}</h4>
+                            <span class="badge bg-secondary ms-3">{{ package.get_transportation_type_display }}</span>
+                        </div>
+                        <p class="text-muted">
+                            <i class="fas fa-clock me-1"></i> {{ package.duration_hours }} {% trans "hours" %} | 
+                            <i class="fas fa-tag me-1"></i> {% trans "AED" %} {{ package.price }} {% trans "per adult" %}
+                            {% if package.child_price %}
+                            | {% trans "AED" %} {{ package.child_price }} {% trans "per child" %}
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <form method="post" id="booking-form" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        {{ form.package }}
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="d-flex align-items-center">
+                                    <span class="badge bg-primary rounded-circle me-2" style="width: 30px; height: 30px;">1</span>
+                                    {% trans "Select Date" %}
+                                </h5>
+                                <p class="text-muted small">{% trans "Choose your preferred date for the safari experience." %}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    {{ form.booking_date }}
+                                    <label for="{{ form.booking_date.id_for_label }}">{% trans "Booking Date" %}</label>
+                                    <div class="form-text mt-2"><i class="fas fa-info-circle me-1"></i> {{ form.booking_date.help_text }}</div>
+                                    {% if form.booking_date.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.booking_date.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="d-flex align-items-center">
+                                    <span class="badge bg-primary rounded-circle me-2" style="width: 30px; height: 30px;">2</span>
+                                    {% trans "Number of People" %}
+                                </h5>
+                                <p class="text-muted small">{% trans "Specify how many people will be joining the safari experience." %}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.adults.id_for_label }}" class="form-label">{% trans "Adults" %}</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        {{ form.adults }}
+                                    </div>
+                                    {% if form.adults.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.adults.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.children.id_for_label }}" class="form-label">{% trans "Children" %} <small class="text-muted">({% trans "under 12 years" %})</small></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-child"></i></span>
+                                        {{ form.children }}
+                                    </div>
+                                    {% if form.children.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.children.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if addon_forms %}
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5>{% trans "3. Select Add-ons (Optional)" %}</h5>
+                                <p class="text-muted small">{% trans "Enhance your desert safari experience with these optional add-ons." %}</p>
+                            </div>
+                            
+                            {% for addon_item in addon_forms %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h6 class="mb-1">{{ addon_item.relation.addon.name }}</h6>
+                                                <p class="text-muted small mb-2">{{ addon_item.relation.addon.description }}</p>
+                                            </div>
+                                            {% if addon_item.relation.addon.icon %}
+                                            <i class="{{ addon_item.relation.addon.icon }} fa-2x text-primary"></i>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between align-items-center mt-3">
+                                            <div>
+                                                <span class="fw-bold">{% trans "AED" %} {{ addon_item.relation.get_price }}</span>
+                                                {% if addon_item.relation.addon.is_per_person %}
+                                                <small class="d-block text-muted">{% trans "per person" %}</small>
+                                                {% else %}
+                                                <small class="d-block text-muted">{% trans "per booking" %}</small>
+                                                {% endif %}
+                                            </div>
+                                            <div class="input-group input-group-sm" style="width: 100px;">
+                                                <span class="input-group-text">{% trans "Qty" %}</span>
+                                                {{ addon_item.form.addon }}
+                                                {{ addon_item.form.quantity }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="d-flex align-items-center">
+                                    <span class="badge bg-primary rounded-circle me-2" style="width: 30px; height: 30px;">4</span>
+                                    {% trans "Your Information" %}
+                                </h5>
+                                <p class="text-muted small">{% trans "Please provide your contact details for booking confirmation." %}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.full_name.id_for_label }}" class="form-label">{% trans "Full Name" %}</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        {{ form.full_name }}
+                                    </div>
+                                    {% if form.full_name.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.full_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">{% trans "Email Address" %}</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                        {{ form.email }}
+                                    </div>
+                                    {% if form.email.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.phone.id_for_label }}" class="form-label">{% trans "Phone Number" %}</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                        {{ form.phone }}
+                                    </div>
+                                    <div class="form-text"><i class="fas fa-info-circle me-1"></i> {% trans "Include country code (e.g. +971)" %}</div>
+                                    {% if form.phone.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.phone.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.nationality.id_for_label }}" class="form-label">{% trans "Nationality" %}</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                                        {{ form.nationality }}
+                                    </div>
+                                    {% if form.nationality.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.nationality.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5>{% trans "5. Pickup Information" %}</h5>
+                                <p class="text-muted small">{% trans "Please either select a pickup location or provide a custom pickup location below." %}</p>
+                            </div>
+                            {% if form.emirate.field.queryset.exists %}
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.emirate.id_for_label }}" class="form-label">{% trans "Emirate" %}</label>
+                                    {{ form.emirate }}
+                                    {% if form.emirate.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.emirate.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.pickup_location.id_for_label }}" class="form-label">{% trans "Pickup Location" %}</label>
+                                    {{ form.pickup_location }}
+                                    {% if form.pickup_location.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.pickup_location.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <div class="card border-primary">
+                                        <div class="card-header bg-primary bg-opacity-10">
+                                            <label for="{{ form.pickup_location_text.id_for_label }}" class="form-label mb-0">{% trans "OR: Enter Custom Pickup Location" %}</label>
+                                        </div>
+                                        <div class="card-body">
+                                            {{ form.pickup_location_text }}
+                                            <div class="form-text">{% trans "If your location is not in the dropdown above, please provide details here (hotel name, area, etc.)" %}</div>
+                                            {% if form.pickup_location_text.errors %}
+                                            <div class="invalid-feedback d-block">{{ form.pickup_location_text.errors }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.hotel_name.id_for_label }}" class="form-label">{% trans "Hotel Name" %} <small class="text-muted">({% trans "if applicable" %})</small></label>
+                                    {{ form.hotel_name }}
+                                    {% if form.hotel_name.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.hotel_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.hotel_room.id_for_label }}" class="form-label">{% trans "Room Number" %} <small class="text-muted">({% trans "if applicable" %})</small></label>
+                                    {{ form.hotel_room }}
+                                    {% if form.hotel_room.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.hotel_room.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="{{ form.address_details.id_for_label }}" class="form-label">{% trans "Additional Address Details" %} <small class="text-muted">({% trans "optional" %})</small></label>
+                                    {{ form.address_details }}
+                                    {% if form.address_details.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.address_details.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="{{ form.special_requests.id_for_label }}" class="form-label">{% trans "Special Requests" %} <small class="text-muted">({% trans "optional" %})</small></label>
+                                    {{ form.special_requests }}
+                                    {% if form.special_requests.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.special_requests.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5>{% trans "6. Payment Method" %}</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.payment_method.id_for_label }}" class="form-label">{% trans "Select Payment Method" %}</label>
+                                    {{ form.payment_method }}
+                                    {% if form.payment_method.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.payment_method.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading">{% trans "Important Information" %}</h6>
+                                    <ul class="mb-0 small">
+                                        <li>{% trans "Your booking is not confirmed until payment is received." %}</li>
+                                        <li>{% trans "Pickup times will be confirmed via email/WhatsApp after booking." %}</li>
+                                        <li>{% trans "Free cancellation is available up to 24 hours before the tour." %}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-5">
+                            <div class="col-12">
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-check-circle me-2"></i>{% trans "Complete Booking" %}
+                                    </button>
+                                </div>
+                                <div class="text-center mt-3">
+                                    <p class="text-muted small">
+                                        <i class="fas fa-shield-alt me-1"></i> {% trans "Secure booking" %} • 
+                                        <i class="fas fa-credit-card me-1"></i> {% trans "Safe payment" %} • 
+                                        <i class="fas fa-undo me-1"></i> {% trans "Free cancellation 24h before" %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Price calculation logic would go here in a real application
+        const adultInput = document.getElementById('{{ form.adults.id_for_label }}');
+        const childrenInput = document.getElementById('{{ form.children.id_for_label }}');
+        const addonQuantityInputs = document.querySelectorAll('.addon-quantity');
+        
+        // Example function to update price (would be implemented in a real app)
+        function updateTotalPrice() {
+            // This is just a placeholder - real implementation would calculate based on
+            // selected options, addons, etc.
+            console.log('Price would be updated here');
+        }
+        
+        // Add event listeners
+        if (adultInput) adultInput.addEventListener('change', updateTotalPrice);
+        if (childrenInput) childrenInput.addEventListener('change', updateTotalPrice);
+        
+        addonQuantityInputs.forEach(input => {
+            input.addEventListener('change', updateTotalPrice);
+        });
+        
+        // Initial calculation
+        updateTotalPrice();
+        
+        // Handle dynamic loading of pickup locations based on selected emirate
+        const emirateSelect = document.getElementById('emirate-select');
+        const pickupLocationSelect = document.getElementById('pickup-location-select');
+        
+        if (emirateSelect && pickupLocationSelect) {
+            emirateSelect.addEventListener('change', function() {
+                const emirateId = this.value;
+                
+                // Clear current options
+                pickupLocationSelect.innerHTML = '<option value="">{% trans "Select Pickup Location" %}</option>';
+                
+                if (emirateId) {
+                    // Fetch pickup locations for the selected emirate
+                    fetch(`/locations/api/pickup-locations/${emirateId}/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.locations && data.locations.length > 0) {
+                                data.locations.forEach(location => {
+                                    const option = document.createElement('option');
+                                    option.value = location.id;
+                                    option.textContent = location.name;
+                                    pickupLocationSelect.appendChild(option);
+                                });
+                            } else {
+                                // No pickup locations available
+                                const option = document.createElement('option');
+                                option.value = '';
+                                option.textContent = '{% trans "No pickup locations available" %}';
+                                pickupLocationSelect.appendChild(option);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching pickup locations:', error);
+                        });
+                }
+            });
+            
+            // Trigger change event if emirate is already selected (e.g., form validation error)
+            if (emirateSelect.value) {
+                emirateSelect.dispatchEvent(new Event('change'));
+            }
+        }
+    });
+</script>
+{% endblock %}

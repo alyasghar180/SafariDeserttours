@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Gallery | Desert Safari Dubai{% endblock %}
+
+{% block content %}
+<!-- Gallery Hero Section -->
+<section class="gallery-hero" data-bg-image="{% static 'images/gallery/Our Gallery.jpeg' %}">
+    <div class="container">
+        <div class="hero-content text-center">
+            <h1 class="hero-title">Our Gallery</h1>
+            <p class="hero-subtitle">Explore the beauty and excitement of our desert safaris</p>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Filter Section -->
+<section class="gallery-filter-section py-5">
+    <div class="container">
+        <div class="filter-buttons text-center mb-5">
+            <button class="btn btn-outline-primary active me-2 mb-2" data-filter="*">All</button>
+            <button class="btn btn-outline-primary me-2 mb-2" data-filter=".dune-bashing">Dune Bashing</button>
+            <button class="btn btn-outline-primary me-2 mb-2" data-filter=".camel-riding">Camel Riding</button>
+            <button class="btn btn-outline-primary me-2 mb-2" data-filter=".desert-camp">Desert Camp</button>
+            <button class="btn btn-outline-primary me-2 mb-2" data-filter=".entertainment">Entertainment</button>
+            <button class="btn btn-outline-primary me-2 mb-2" data-filter=".sunset">Sunset Views</button>
+            <button class="btn btn-outline-primary me-2 mb-2" data-filter=".quad-bikes">Quad Bikes</button>
+        </div>
+        
+        <div class="row gallery-grid g-4">
+            <!-- Dune Bashing Images -->
+            <div class="col-lg-4 col-md-6 gallery-item dune-bashing">
+                <div class="gallery-card">
+                    <img src="{% static 'images/gallery/dune bashing adventure.jpeg' %}" alt="Dune Bashing Adventure" class="img-fluid">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h5>Dune Bashing Adventure</h5>
+                            <p>Experience the thrill of dune bashing in our 4x4 vehicles</p>
+                            <a href="{% static 'images/gallery/dune bashing adventure.jpeg' %}" class="gallery-popup">
+                                <i class="fas fa-search-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item dune-bashing">
+                <div class="gallery-card">
+                    <img src="{% static 'images/gallery/Desert 4x4 Adventure.png' %}" alt="Desert 4x4 Adventure" class="img-fluid">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h5>Desert 4x4 Adventure</h5>
+                            <p>Our expert drivers navigate the challenging sand dunes</p>
+                            <a href="{% static 'images/gallery/Desert 4x4 Adventure.png' %}" class="gallery-popup">
+                                <i class="fas fa-search-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Camel Riding Images -->
+            <div class="col-lg-4 col-md-6 gallery-item camel-riding">
+                <div class="gallery-card">
+                    <img src="{% static 'images/gallery/Traditional Camel Riding.png' %}" alt="Traditional Camel Riding" class="img-fluid">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h5>Traditional Camel Riding</h5>
+                            <p>Experience the traditional mode of desert transportation</p>
+                            <a href="{% static 'images/gallery/Traditional Camel Riding.png' %}" class="gallery-popup">
+                                <i class="fas fa-search-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item camel-riding">
+                <div class="gallery-card">
+                    <img src="{% static 'images/gallery/Camel Caravan.png' %}" alt="Camel Caravan" class="img-fluid">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h5>Camel Caravan</h5>
+                            <p>Join our camel caravan for a memorable desert experience</p>
+                            <a href="{% static 'images/gallery/Camel Caravan.png' %}" class="gallery-popup">
+                                <i class="fas fa-search-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Desert Camp Images -->
+            <div class="col-lg-4 col-md-6 gallery-item desert-camp">
+                <div class="gallery-card">
+                    <img src="{% static 'images/gallery/Bedouin Style Camp.png' %}" alt="Bedouin Style Camp" class="img-fluid">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h5>Bedouin Style Camp</h5>
+                            <p>Our authentic desert camp with traditional Arabian decorations</p>
+                            <a href="{% static 'images/gallery/Bedouin Style Camp.png' %}" class="gallery-popup">
+                                <i class="fas fa-search-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item desert-camp">
+                <div class="gallery-card">
+                    <img src="{% static 'images/gallery/Desert Dining Experience.png' %}" alt="Desert Dining Experience" class="img-fluid">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h5>Desert Dining Experience</h5>
+                            <p>Enjoy a delicious BBQ dinner under the stars</p>
+                            <a href="{% static 'images/gallery/Desert Dining Experience.png' %}" class="gallery-popup">
+                                <i class="fas fa-search-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Entertainment Images -->
+            <div class="col-lg-4 col-md-6 gallery-item entertainment">
+                <div class="gallery-card">
+                    <img src="{% static 'images/gallery/entertainment-1.jpg' %}" alt="Belly Dance Performance" class="img-fluid">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h5>Belly Dance Performance</h5>
+                            <p>Traditional belly dance entertainment at our desert camp</p>
+                            <a href="{% static 'images/gallery/entertainment-1.jpg' %}" class="gallery-popup">
+                                <i class="fas fa-search-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item entertainment">
+                <div class="gallery-card">
+                    <img src="{% static 'images/gallery/Tanura Dance Show.png' %}" alt="Tanura Dance Show" class="img-fluid">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h5>Tanura Dance Show</h5>
+                            <p>Mesmerizing Tanura dance performance with colorful costumes</p>
+                            <a href="{% static 'images/gallery/Tanura Dance Show.png' %}" class="gallery-popup">
+                                <i class="fas fa-search-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sunset Images -->
+            <div class="col-lg-4 col-md-6 gallery-item sunset">
+                <div class="gallery-card">
+                    <img src="{% static 'images/gallery/Desert Sunset.png' %}" alt="Desert Sunset" class="img-fluid">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h5>Desert Sunset</h5>
+                            <p>Breathtaking sunset views over the Arabian desert</p>
+                            <a href="{% static 'images/gallery/Desert Sunset.png' %}" class="gallery-popup">
+                                <i class="fas fa-search-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item sunset">
+                <div class="gallery-card">
+                    <img src="{% static 'images/gallery/Golden Hour in the Desert.png' %}" alt="Golden Hour in the Desert" class="img-fluid">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h5>Golden Hour in the Desert</h5>
+                            <p>The magical golden hour lighting up the desert landscape</p>
+                            <a href="{% static 'images/gallery/Golden Hour in the Desert.png' %}" class="gallery-popup">
+                                <i class="fas fa-search-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quad Bikes Images -->
+            <div class="col-lg-4 col-md-6 gallery-item quad-bikes">
+                <div class="gallery-card">
+                    <img src="{% static 'images/gallery/Quad Bike Adventure.png' %}" alt="Quad Bike Adventure" class="img-fluid">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h5>Quad Bike Adventure</h5>
+                            <p>Experience the thrill of riding quad bikes in the desert</p>
+                            <a href="{% static 'images/gallery/Quad Bike Adventure.png' %}" class="gallery-popup">
+                                <i class="fas fa-search-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 gallery-item quad-bikes">
+                <div class="gallery-card">
+                    <img src="{% static 'images/gallery/Desert Quad Biking.png' %}" alt="Desert Quad Biking" class="img-fluid">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h5>Desert Quad Biking</h5>
+                            <p>Navigate the sandy terrain on our powerful quad bikes</p>
+                            <a href="{% static 'images/gallery/Desert Quad Biking.png' %}" class="gallery-popup">
+                                <i class="fas fa-search-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Video Gallery Section with Background Videos -->
+<section class="video-gallery-section py-5 bg-light">
+    <div class="container">
+        <div class="section-title text-center mb-5">
+            <h2>Video Gallery</h2>
+            <p>Watch our desert safari adventures in action</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="video-card position-relative" style="height: 400px; overflow: hidden; border-radius: 8px;">
+                    <!-- Background video with overlay -->
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+                        <iframe 
+                            src="https://www.youtube.com/embed/4aKBsvWVYjY?autoplay=1&mute=1&loop=1&playlist=4aKBsvWVYjY&controls=0&showinfo=0&rel=0" 
+                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border: none;"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen></iframe>
+                    </div>
+                    
+                    <!-- Semi-transparent overlay -->
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.3); z-index: 2;"></div>
+                    
+                    <!-- Content overlay -->
+                    <div style="position: absolute; bottom: 20px; left: 20px; right: 20px; z-index: 3; color: white;">
+                        <h4>Desert Safari Experience</h4>
+                        <p>Experience the complete desert safari adventure from dune bashing to entertainment</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="video-card position-relative" style="height: 400px; overflow: hidden; border-radius: 8px;">
+                    <!-- Background video with overlay -->
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+                        <iframe 
+                            src="https://www.youtube.com/embed/aRLNZWTe5xg?autoplay=1&mute=1&loop=1&playlist=aRLNZWTe5xg&controls=0&showinfo=0&rel=0" 
+                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border: none;"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen></iframe>
+                    </div>
+                    
+                    <!-- Semi-transparent overlay -->
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.3); z-index: 2;"></div>
+                    
+                    <!-- Content overlay -->
+                    <div style="position: absolute; bottom: 20px; left: 20px; right: 20px; z-index: 3; color: white;">
+                        <h4>Dune Bashing Adventure</h4>
+                        <p>Experience the thrill of dune bashing with our expert drivers in the Arabian desert</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section" data-bg-image="{% static 'images/desert-cta.jpg' %}">
+    <div class="container">
+        <div class="cta-content text-center">
+            <h2 class="cta-title">Ready to Create Your Own Desert Memories?</h2>
+            <p class="cta-text">Book your desert safari adventure today and be part of these amazing experiences!</p>
+            <a href="{% url 'package_list' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-calendar-check me-2"></i>Book Now
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize filter buttons
+        const filterButtons = document.querySelectorAll('.filter-buttons .btn');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Get filter value
+                const filterValue = this.getAttribute('data-filter');
+                
+                // Show/hide gallery items based on filter
+                galleryItems.forEach(item => {
+                    if (filterValue === '*') {
+                        item.style.display = 'block';
+                    } else if (item.classList.contains(filterValue.substring(1))) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // No video modal handling needed as videos are now directly embedded in the page
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,406 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{{ package.name }} | Desert Safari Dubai{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Package Header -->
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Home" %}</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'package_list' %}">{% trans "Packages" %}</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'package_list_by_category' package.category.slug %}">{{ package.category.name }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ package.name }}</li>
+                </ol>
+            </nav>
+            
+            <h1 class="mb-3">{{ package.name }}</h1>
+            
+            <div class="d-flex align-items-center mb-4">
+                <span class="badge bg-primary me-3">{{ package.get_transportation_type_display }}</span>
+                <span class="text-muted me-3"><i class="fas fa-clock me-1"></i> {{ package.duration_hours }} {% trans "hours" %}</span>
+                <div class="ms-auto">
+                    <a href="#book-now" class="btn btn-primary">{% trans "Book Now" %}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Package Details -->
+        <div class="col-lg-8">
+            <!-- Package Gallery -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-0">
+                    <div id="packageGallery" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#packageGallery" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            {% for image in package.images.all %}
+                            <button type="button" data-bs-target="#packageGallery" data-bs-slide-to="{{ forloop.counter }}" aria-label="Slide {{ forloop.counter|add:1 }}"></button>
+                            {% endfor %}
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                {% if package.featured_image %}
+                                <img src="{{ package.featured_image.url }}" class="d-block w-100 gallery-img" alt="{{ package.name }}">
+                                {% else %}
+                                <img src="{% static 'img/package-placeholder.jpg' %}" class="d-block w-100 gallery-img" alt="{{ package.name }}">
+                                {% endif %}
+                            </div>
+                            {% for image in package.images.all %}
+                            <div class="carousel-item">
+                                <img src="{{ image.image.url }}" class="d-block w-100 gallery-img" alt="{{ image.title|default:package.name }}">
+                                {% if image.title %}
+                                <div class="carousel-caption d-none d-md-block">
+                                    <h5>{{ image.title }}</h5>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#packageGallery" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#packageGallery" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Package Description -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">{% trans "About This Package" %}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="package-description">
+                        {{ package.description|linebreaks }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Package Inclusions -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">{% trans "What's Included" %}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                        {% for relation in package.inclusion_relations.all %}
+                        <div class="col">
+                            <div class="d-flex align-items-center">
+                                {% if relation.inclusion.icon %}
+                                <div class="me-3 text-primary">
+                                    <i class="{{ relation.inclusion.icon }} fa-2x"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <h5 class="mb-1">{{ relation.inclusion.name }}</h5>
+                                    {% if relation.inclusion.description %}
+                                    <p class="mb-0 text-muted small">{{ relation.inclusion.description }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <p class="text-muted">{% trans "No inclusions specified for this package." %}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Package Reviews -->
+            <div class="card shadow-sm mb-4" id="reviews">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">{% trans "Customer Reviews" %}</h4>
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">
+                        {% trans "Write a Review" %}
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if reviews %}
+                    <div class="reviews-container">
+                        {% for review in reviews %}
+                        <div class="review-item mb-4 pb-4 {% if not forloop.last %}border-bottom{% endif %}">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h5 class="mb-1">{{ review.title }}</h5>
+                                    <div class="rating mb-2">
+                                        {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= review.rating %}
+                                        <i class="fas fa-star text-warning"></i>
+                                        {% else %}
+                                        <i class="far fa-star text-warning"></i>
+                                        {% endif %}
+                                        {% endfor %}
+                                        <span class="ms-2 text-muted small">{{ review.get_rating_display }}</span>
+                                    </div>
+                                </div>
+                                <span class="text-muted small">{{ review.created_at|date:"M d, Y" }}</span>
+                            </div>
+                            <p class="mb-1">{{ review.comment }}</p>
+                            <div class="text-muted small">
+                                {% if review.user %}
+                                {{ review.user.get_full_name|default:review.user.username }}
+                                {% else %}
+                                {{ review.name }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <p class="text-muted mb-3">{% trans "No reviews yet. Be the first to review this package!" %}</p>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">
+                            {% trans "Write a Review" %}
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Review Modal -->
+            <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="reviewModalLabel">{% trans "Write a Review" %}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="post" action="{% url 'add_package_review' package.id %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="id_rating" class="form-label">{% trans "Rating" %}</label>
+                                    {{ review_form.rating }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_title" class="form-label">{% trans "Title" %}</label>
+                                    {{ review_form.title }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_comment" class="form-label">{% trans "Comment" %}</label>
+                                    {{ review_form.comment }}
+                                </div>
+                                
+                                {% if not user.is_authenticated %}
+                                <!-- Name and email fields for anonymous users -->
+                                <div class="mb-3">
+                                    <label for="id_name" class="form-label">{% trans "Your Name" %}</label>
+                                    {{ review_form.name }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_email" class="form-label">{% trans "Your Email" %} <small class="text-muted">({% trans "Optional" %})</small></label>
+                                    {{ review_form.email }}
+                                </div>
+                                {% endif %}
+                                
+                                <div class="text-end">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                                    <button type="submit" class="btn btn-primary">{% trans "Submit Review" %}</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Related Packages -->
+            {% if related_packages %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">{% trans "You Might Also Like" %}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                        {% for related in related_packages %}
+                        <div class="col">
+                            <div class="card h-100 shadow-sm related-package-card">
+                                {% if related.featured_image %}
+                                <img src="{{ related.featured_image.url }}" class="card-img-top related-img" alt="{{ related.name }}">
+                                {% else %}
+                                <img src="{% static 'img/package-placeholder.jpg' %}" class="card-img-top related-img" alt="{{ related.name }}">
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ related.name }}</h5>
+                                    <p class="card-text text-muted small">
+                                        <i class="fas fa-clock me-1"></i> {{ related.duration_hours }} {% trans "hours" %}
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="fw-bold text-primary">AED {{ related.price }}</span>
+                                            <div class="small text-muted">{% trans "Starting from" %}</div>
+                                        </div>
+                                        <a href="{% url 'package_detail' related.slug %}" class="btn btn-sm btn-outline-primary">{% trans "View" %}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Booking Card -->
+            <div class="card shadow-sm mb-4 sticky-top" id="book-now" style="top: 20px; z-index: 100;">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">{% trans "Book This Package" %}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="price-container mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted">{% trans "Adult Price" %}</span>
+                            <div class="text-end">
+                                <span class="fs-4 fw-bold text-primary">AED {{ package.price }}</span>
+                                <div class="small text-muted">{% trans "Starting from" %}</div>
+                            </div>
+                        </div>
+                        {% if package.child_price %}
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">{% trans "Child Price" %}</span>
+                            <div class="text-end">
+                                <span class="fs-5 fw-bold text-primary">AED {{ package.child_price }}</span>
+                                <div class="small text-muted">{% trans "Starting from" %}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="booking-details mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fas fa-car me-2"></i> {% trans "Transportation" %}</span>
+                            <span class="fw-bold">{{ package.get_transportation_type_display }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fas fa-clock me-2"></i> {% trans "Duration" %}</span>
+                            <span class="fw-bold">{{ package.duration_hours }} {% trans "hours" %}</span>
+                        </div>
+                        {% if package.pickup_time_start %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fas fa-hourglass-start me-2"></i> {% trans "Pickup Time" %}</span>
+                            <span class="fw-bold">{{ package.pickup_time_start|time:"g:i A" }}{% if package.pickup_time_end %} - {{ package.pickup_time_end|time:"g:i A" }}{% endif %}</span>
+                        </div>
+                        {% endif %}
+                        {% if package.dropoff_time_start %}
+                        <div class="d-flex justify-content-between">
+                            <span><i class="fas fa-hourglass-end me-2"></i> {% trans "Dropoff Time" %}</span>
+                            <span class="fw-bold">{{ package.dropoff_time_start|time:"g:i A" }}{% if package.dropoff_time_end %} - {{ package.dropoff_time_end|time:"g:i A" }}{% endif %}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Addons -->
+                    {% if package.addon_relations.exists %}
+                    <div class="addons-container mb-4">
+                        <h5 class="mb-3">{% trans "Available Add-ons" %}</h5>
+                        {% for relation in package.addon_relations.all %}
+                        <div class="form-check d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <input class="form-check-input addon-checkbox" type="checkbox" value="{{ relation.addon.id }}" id="addon{{ relation.addon.id }}">
+                                <label class="form-check-label" for="addon{{ relation.addon.id }}">
+                                    {{ relation.addon.name }}
+                                    {% if relation.addon.description %}
+                                    <small class="d-block text-muted">{{ relation.addon.description }}</small>
+                                    {% endif %}
+                                </label>
+                            </div>
+                            <div class="text-end">
+                                <span class="fw-bold">AED {{ relation.get_price }}</span>
+                                {% if relation.addon.is_per_person %}
+                                <small class="d-block text-muted">{% trans "per person" %}</small>
+                                {% else %}
+                                <small class="d-block text-muted">{% trans "per booking" %}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="booking-options">
+                        <h5 class="text-center mb-3">{% trans "Choose How to Book" %}</h5>
+                        
+                        <!-- Online Booking Option -->
+                        <a href="{% url 'create_booking' package.slug %}" class="btn btn-primary btn-lg w-100 mb-3">
+                            <i class="fas fa-globe me-2"></i>{% trans "Book Online" %}
+                        </a>
+                        
+                        <!-- WhatsApp Booking Option -->
+                        <a href="https://wa.me/971582240451?text=Hi%20Desert%20Safari%20Dubai,%20I'm%20interested%20in%20booking%20the%20{{ package.name|urlencode }}%20package." target="_blank" class="btn btn-success btn-lg w-100 mb-3">
+                            <i class="fab fa-whatsapp me-2"></i>{% trans "Book via WhatsApp" %}
+                        </a>
+                        
+                        <!-- Call Booking Option -->
+                        <a href="tel:+971582240451" class="btn btn-info btn-lg w-100 mb-3">
+                            <i class="fas fa-phone-alt me-2"></i>{% trans "Book via Call" %}
+                        </a>
+                        
+                        <p class="text-muted small text-center mb-0">{% trans "Instant confirmation • Free cancellation 24h before" %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .gallery-img {
+        height: 500px;
+        object-fit: cover;
+    }
+    
+    .related-img {
+        height: 150px;
+        object-fit: cover;
+    }
+    
+    .related-package-card {
+        transition: transform 0.3s;
+    }
+    
+    .related-package-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    @media (max-width: 768px) {
+        .gallery-img {
+            height: 300px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        // Calculate total price when addons are selected
+        const addonCheckboxes = document.querySelectorAll('.addon-checkbox');
+        if (addonCheckboxes.length > 0) {
+            addonCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    // Here you would update the total price
+                    // This is a placeholder for the booking functionality
+                    console.log('Addon selection changed');
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}
